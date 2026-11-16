@@ -27,6 +27,8 @@ export type Call =
 
 const HOUR = 3_600_000;
 
+export const detailFailedKey = (matchId: number) => `detail-failed:${matchId}`;
+
 // The provider lists matches newest first, so a match's page follows from how many kick off later.
 function pagesOf(match: PlannedMatch, all: PlannedMatch[]) {
   const first = all.filter((m) => m.kickoff > match.kickoff).length;
@@ -60,13 +62,18 @@ export function plan({ now, budget, season, matches, stamps }: PlanInput): Call[
     }
 
     // TODO: fetch only today's matches if the API supports a date filter; pages are the fallback.
+    // "postponed" covers interruptions and delays, which usually resume the same day.
     const unfinished = own.filter(
       (m) =>
-        (m.status === "scheduled" || m.status === "live") &&
+        (m.status === "scheduled" || m.status === "live" || m.status === "postponed") &&
         m.kickoff <= now &&
         now.getTime() - m.kickoff.getTime() < 24 * HOUR,
     );
-    const live = unfinished.some((m) => now.getTime() - m.kickoff.getTime() < 3 * HOUR);
+    // Extra time and penalties can run past three hours; six caps a match stuck as live.
+    const live = unfinished.some((m) => {
+      const age = now.getTime() - m.kickoff.getTime();
+      return age < 3 * HOUR || (m.status === "live" && age < 6 * HOUR);
+    });
     const recentKey = `recent:${competition}:${season.season}`;
     const lastRecent = stamps[recentKey]?.getTime() ?? 0;
     if (live || (unfinished.length && now.getTime() - lastRecent >= 3 * HOUR)) {
@@ -92,6 +99,7 @@ export function plan({ now, budget, season, matches, stamps }: PlanInput): Call[
   }
 
   // Details wait three hours after kickoff so the provider has time to complete events and stats.
+  // A failed one waits a day so it can't stall the ones behind it.
   for (const { competition } of season.competitions) {
     matches
       .filter(
@@ -99,7 +107,8 @@ export function plan({ now, budget, season, matches, stamps }: PlanInput): Call[
           m.competition === competition &&
           m.status === "finished" &&
           !m.detailsSyncedAt &&
-          now.getTime() - m.kickoff.getTime() >= 3 * HOUR,
+          now.getTime() - m.kickoff.getTime() >= 3 * HOUR &&
+          now.getTime() - (stamps[detailFailedKey(m.id)]?.getTime() ?? 0) >= 24 * HOUR,
       )
       .sort((a, b) => b.kickoff.getTime() - a.kickoff.getTime())
       .forEach((m) => groups.push([{ kind: "detail", competition, matchId: m.id }]));

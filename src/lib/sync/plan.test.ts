@@ -125,6 +125,26 @@ describe("plan", () => {
     expect(plan(input({ matches: list, stamps: recent(4) }))).toHaveLength(1);
   });
 
+  it("keeps polling a match the provider reported as interrupted", () => {
+    const list = matches("liga-profesional", 10);
+    list[0] = { ...list[0], kickoff: hoursAgo(1), status: "postponed" };
+    expect(plan(input({ matches: list }))).toHaveLength(1);
+    list[0] = { ...list[0], kickoff: hoursAgo(5) };
+    const recent = (h: number) => ({ ...syncedToday, "recent:liga-profesional:2026": hoursAgo(h) });
+    expect(plan(input({ matches: list, stamps: recent(1) }))).toEqual([]);
+    expect(plan(input({ matches: list, stamps: recent(4) }))).toHaveLength(1);
+  });
+
+  it("polls a match stored as live on every run for six hours after kickoff", () => {
+    const list = matches("liga-profesional", 10);
+    const stamps = { ...syncedToday, "recent:liga-profesional:2026": hoursAgo(0.25) };
+    list[0] = { ...list[0], kickoff: hoursAgo(3.5), status: "live" };
+    expect(plan(input({ matches: list, stamps }))).toHaveLength(1);
+    // A match still scheduled that long after kickoff is stale, not running.
+    list[0] = { ...list[0], status: "scheduled" };
+    expect(plan(input({ matches: list, stamps }))).toEqual([]);
+  });
+
   it("ignores unfinished matches older than a day", () => {
     const list = matches("liga-profesional", 10);
     list[0] = { ...list[0], kickoff: hoursAgo(30), status: "scheduled" };
@@ -146,7 +166,7 @@ describe("plan", () => {
       {
         id: 201,
         competition: "liga-profesional" as const,
-        kickoff: hoursAgo(5),
+        kickoff: hoursAgo(30),
         status: "postponed" as const,
         detailsSyncedAt: null,
       },
@@ -158,6 +178,17 @@ describe("plan", () => {
       { kind: "detail", competition: "primera-nacional", matchId: 2 },
       { kind: "detail", competition: "copa-argentina", matchId: 1 },
     ]);
+  });
+
+  it("skips a detail that failed in the last 24 hours", () => {
+    const list = matches("primera-nacional", 3, "finished", false);
+    const failed = (h: number) => ({ ...syncedToday, "detail-failed:1": hoursAgo(h) });
+    expect(
+      plan(input({ matches: list, stamps: failed(23) })).map(
+        (c) => c.kind === "detail" && c.matchId,
+      ),
+    ).toEqual([2, 3]);
+    expect(plan(input({ matches: list, stamps: failed(25) }))).toHaveLength(3);
   });
 
   describe("budget", () => {
