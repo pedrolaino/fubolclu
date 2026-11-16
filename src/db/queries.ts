@@ -1,4 +1,4 @@
-import { and, asc, eq, inArray } from "drizzle-orm";
+import { and, asc, eq, inArray, max } from "drizzle-orm";
 import { cacheTag } from "next/cache";
 import { db } from "@/db";
 import {
@@ -6,6 +6,7 @@ import {
   matchEvents,
   matches,
   providerStandings,
+  syncState,
   teams,
   type Competition,
 } from "@/db/schema";
@@ -52,4 +53,12 @@ export async function loadLeague(competition: Competition) {
   cacheTag("data");
   const config = currentSeason.competitions.find((c) => c.competition === competition)!;
   return buildLeague(await leagueData(competition, currentSeason.season), config, new Date());
+}
+
+// When the data last changed, for the footer.
+export async function loadSyncedAt() {
+  "use cache";
+  cacheTag("data");
+  const [row] = await db.select({ at: max(syncState.syncedAt) }).from(syncState);
+  return row?.at ?? null;
 }

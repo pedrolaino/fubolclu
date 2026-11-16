@@ -19,12 +19,15 @@ export function Hero({
   title,
   summary,
   shareCrest = false,
+  sticker = true,
 }: {
   subject: TeamView;
   title: string;
   summary: string;
   // The sticker is the destination of the crest a table row links from.
   shareCrest?: boolean;
+  // Off when the page has no team, like the 404.
+  sticker?: boolean;
 }) {
   const pathname = usePathname();
   // The colour being wiped over; catches up once the wipe ends.
@@ -83,29 +86,31 @@ export function Hero({
               {title}
             </motion.h1>
           </div>
-          <motion.div
-            key={subject.id}
-            className="absolute top-[68px] right-3.5 z-10 wide:static wide:mr-[60px] wide:translate-y-[70px]"
-            // A morphing sticker arrives already visible.
-            initial={shareCrest ? false : { scale: 1.35, rotate: 20, opacity: 0 }}
-            animate={{ scale: 1, rotate: 8, opacity: 1 }}
-            transition={{ type: "spring", stiffness: 380, damping: 18, delay: 0.15 }}
-          >
-            {shareCrest ? (
-              // One element at both sizes: a named crest can't be paired with its hidden twin.
-              <Crest
-                team={subject}
-                size={190}
-                className="sticker-lg !size-[84px] wide:!size-[190px]"
-                shared
-              />
-            ) : (
-              <>
-                <Crest team={subject} size={84} className="sticker-lg wide:hidden" />
-                <Crest team={subject} size={190} className="sticker-lg hidden wide:block" />
-              </>
-            )}
-          </motion.div>
+          {sticker && (
+            <motion.div
+              key={subject.id}
+              className="absolute top-[68px] right-3.5 z-10 wide:static wide:mr-[60px] wide:translate-y-[70px]"
+              // A morphing sticker arrives already visible.
+              initial={shareCrest ? false : { scale: 1.35, rotate: 20, opacity: 0 }}
+              animate={{ scale: 1, rotate: 8, opacity: 1 }}
+              transition={{ type: "spring", stiffness: 380, damping: 18, delay: 0.15 }}
+            >
+              {shareCrest ? (
+                // One element at both sizes: a named crest can't be paired with its hidden twin.
+                <Crest
+                  team={subject}
+                  size={190}
+                  className="sticker-lg !size-[84px] wide:!size-[190px]"
+                  shared
+                />
+              ) : (
+                <>
+                  <Crest team={subject} size={84} className="sticker-lg wide:hidden" />
+                  <Crest team={subject} size={190} className="sticker-lg hidden wide:block" />
+                </>
+              )}
+            </motion.div>
+          )}
         </div>
       </div>
     </header>

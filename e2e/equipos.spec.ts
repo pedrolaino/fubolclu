@@ -33,5 +33,5 @@ test("a team that only plays the cup has fixtures but no table", async ({ page }
 test("an unknown team is a 404", async ({ page }) => {
   // The status is only 404 once the page is cached; the first render has already sent its shell.
   await page.goto("/equipos/no-existe");
-  await expect(page.getByText("This page could not be found.")).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Página no encontrada");
 });

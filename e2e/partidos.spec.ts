@@ -30,6 +30,6 @@ test("the teams link to their pages", async ({ page }) => {
 test("an unknown match is a 404", async ({ page }) => {
   for (const id of ["123", "abc"]) {
     await page.goto(`/partidos/${id}`);
-    await expect(page.getByText("This page could not be found.")).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Página no encontrada");
   }
 });

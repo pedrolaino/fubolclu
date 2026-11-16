@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { MotionConfig } from "motion/react";
+import { Footer } from "@/components/footer";
 import "@fontsource/barlow/400.css";
 import "@fontsource/barlow/500.css";
 import "@fontsource/barlow/600.css";
@@ -17,6 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="es">
       <body>
         <MotionConfig reducedMotion="user">{children}</MotionConfig>
+        <Footer />
       </body>
     </html>
   );
