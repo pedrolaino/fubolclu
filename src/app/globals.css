@@ -1,1 +1,61 @@
 @import "tailwindcss";
+
+@theme {
+  --color-paper: #fff;
+  --color-ink: #000;
+  --color-soft: #f1f1ee;
+  --color-mute: #666;
+  --color-faint: #8f8f8a;
+  --font-sans: "Barlow", system-ui, sans-serif;
+  --font-display: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --breakpoint-wide: 860px;
+}
+
+/* Set per page from the team in charge of it. */
+@theme inline {
+  --color-lead: var(--lead);
+  --color-on-lead: var(--on-lead);
+}
+
+:root {
+  --lead: #000;
+  --on-lead: #fff;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  line-height: 1.4;
+}
+
+:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+@utility display {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-style: italic;
+  text-transform: uppercase;
+  line-height: 0.86;
+}
+
+/* Scores and kick-off times. */
+@utility figures {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* White die-cut edge around a crest, like a sticker. */
+@utility sticker {
+  filter: drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff) drop-shadow(0 2px 0 #fff)
+    drop-shadow(0 -2px 0 #fff) drop-shadow(0 1px 1px rgb(0 0 0 / 0.4));
+}
+
+@utility sticker-lg {
+  filter: drop-shadow(6px 0 0 #fff) drop-shadow(-6px 0 0 #fff) drop-shadow(0 6px 0 #fff)
+    drop-shadow(0 -6px 0 #fff) drop-shadow(0 6px 0 rgb(0 0 0 / 0.22));
+}
