@@ -6,6 +6,8 @@ describe("slugify", () => {
     ["Vélez Sarsfield", "velez-sarsfield"],
     ["Gimnasia M.", "gimnasia-m"],
     ["Central Cordoba de Santiago", "central-cordoba-de-santiago"],
+    ["Newell's", "newells"],
+    ["Newell’s Old Boys", "newells-old-boys"],
   ])("%s -> %s", (name, slug) => {
     expect(slugify(name)).toBe(slug);
   });

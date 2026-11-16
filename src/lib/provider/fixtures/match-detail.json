@@ -1,0 +1,195 @@
+[
+  {
+    "id": 1270741216,
+    "events": [
+      {
+        "team": { "id": 907099, "name": "Central Cordoba de Santiago" },
+        "time": "31",
+        "type": "Own Goal",
+        "player": "Tomás Guidara",
+        "playerId": 1057441,
+        "assist": null,
+        "assistingPlayerId": null,
+        "substituted": null
+      },
+      {
+        "team": { "id": 380330, "name": "Lanús" },
+        "time": "35",
+        "type": "Yellow Card",
+        "player": "Felipe Peña Biafore",
+        "playerId": 50122030,
+        "assist": null,
+        "assistingPlayerId": null,
+        "substituted": null
+      },
+      {
+        "team": { "id": 380330, "name": "Lanús" },
+        "time": "41",
+        "type": "Goal",
+        "player": "Eduardo Salvio",
+        "playerId": 92890,
+        "assist": "Marcelino Moreno",
+        "assistingPlayerId": 1001091,
+        "substituted": null
+      },
+      {
+        "team": { "id": 907099, "name": "Central Cordoba de Santiago" },
+        "time": "58",
+        "type": "Yellow Card",
+        "player": "Nicolás Tomás Garrido Aparicio",
+        "playerId": 92840804,
+        "assist": null,
+        "assistingPlayerId": null,
+        "substituted": null
+      },
+      {
+        "team": { "id": 380330, "name": "Lanús" },
+        "time": "65",
+        "type": "Substitution",
+        "player": "Marcelino Moreno",
+        "playerId": 1001091,
+        "assist": null,
+        "assistingPlayerId": 94351950,
+        "substituted": "Gonzalo Thomás Lobos"
+      },
+      {
+        "team": { "id": 380330, "name": "Lanús" },
+        "time": "65",
+        "type": "Substitution",
+        "player": "Raul Loaiza",
+        "playerId": 1065813,
+        "assist": null,
+        "assistingPlayerId": 970984,
+        "substituted": "Ramiro Carrera"
+      },
+      {
+        "team": { "id": 380330, "name": "Lanús" },
+        "time": "65",
+        "type": "Substitution",
+        "player": "Lucas Agustín Besozzi",
+        "playerId": 46485684,
+        "assist": null,
+        "assistingPlayerId": 66722257,
+        "substituted": "benjamin acosta"
+      },
+      {
+        "team": { "id": 907099, "name": "Central Cordoba de Santiago" },
+        "time": "71",
+        "type": "Substitution",
+        "player": "Diego Barrera",
+        "playerId": 65255064,
+        "assist": null,
+        "assistingPlayerId": 71597176,
+        "substituted": "Yuri Casermeiro"
+      },
+      {
+        "team": { "id": 907099, "name": "Central Cordoba de Santiago" },
+        "time": "76",
+        "type": "VAR Penalty Cancelled",
+        "player": "Leonardo Sequeira",
+        "playerId": 1061627,
+        "assist": null,
+        "assistingPlayerId": null,
+        "substituted": null
+      },
+      {
+        "team": { "id": 380330, "name": "Lanús" },
+        "time": "83",
+        "type": "Substitution",
+        "player": "Tomás Guidara",
+        "playerId": 1057441,
+        "assist": null,
+        "assistingPlayerId": 852649,
+        "substituted": "Nicolás Morgantini"
+      },
+      {
+        "team": { "id": 380330, "name": "Lanús" },
+        "time": "83",
+        "type": "Substitution",
+        "player": "Eduardo Salvio",
+        "playerId": 92890,
+        "assist": null,
+        "assistingPlayerId": 75216456,
+        "substituted": "Yoshan Valois"
+      },
+      {
+        "team": { "id": 907099, "name": "Central Cordoba de Santiago" },
+        "time": "84",
+        "type": "Substitution",
+        "player": "Marco Iacobellis",
+        "playerId": 9531515,
+        "assist": null,
+        "assistingPlayerId": 69796391,
+        "substituted": "Lucas Bernabeu"
+      },
+      {
+        "team": { "id": 907099, "name": "Central Cordoba de Santiago" },
+        "time": "84",
+        "type": "Substitution",
+        "player": "Leonardo Sequeira",
+        "playerId": 1061627,
+        "assist": null,
+        "assistingPlayerId": null,
+        "substituted": "Kevin Jacobo Adrián Ibañez"
+      },
+      {
+        "team": { "id": 907099, "name": "Central Cordoba de Santiago" },
+        "time": "86",
+        "type": "Yellow Card",
+        "player": "Diego Barrera",
+        "playerId": 65255064,
+        "assist": null,
+        "assistingPlayerId": null,
+        "substituted": null
+      },
+      {
+        "team": { "id": 907099, "name": "Central Cordoba de Santiago" },
+        "time": "90+3",
+        "type": "Yellow Card",
+        "player": "Enzo Tiziano Ramirez Suarez",
+        "playerId": null,
+        "assist": null,
+        "assistingPlayerId": null,
+        "substituted": null
+      },
+      {
+        "team": { "id": 907099, "name": "Central Cordoba de Santiago" },
+        "time": "90+4",
+        "type": "Substitution",
+        "player": "Enzo Tiziano Ramirez Suarez",
+        "playerId": null,
+        "assist": null,
+        "assistingPlayerId": null,
+        "substituted": "Iván Ignacio Ávila Vega"
+      },
+      {
+        "team": { "id": 907099, "name": "Central Cordoba de Santiago" },
+        "time": "90+4",
+        "type": "Substitution",
+        "player": "Michael Santos",
+        "playerId": 7635418,
+        "assist": null,
+        "assistingPlayerId": 104790546,
+        "substituted": "Martín Francisco Cuitiño"
+      }
+    ],
+    "statistics": [
+      {
+        "team": { "id": 907099, "name": "Central Cordoba de Santiago" },
+        "statistics": [
+          { "value": 0.43, "displayName": "Expected Goals" },
+          { "value": 0, "displayName": "Big Chances Created" },
+          { "value": 81, "displayName": "Attacks" }
+        ]
+      },
+      {
+        "team": { "id": 380330, "name": "Lanús" },
+        "statistics": [
+          { "value": 1.86, "displayName": "Expected Goals" },
+          { "value": 5, "displayName": "Big Chances Created" },
+          { "value": 117, "displayName": "Attacks" }
+        ]
+      }
+    ]
+  }
+]

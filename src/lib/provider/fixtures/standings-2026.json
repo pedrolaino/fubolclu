@@ -1,0 +1,804 @@
+{
+  "groups": [
+    {
+      "name": "Apertura - Group A",
+      "standings": [
+        {
+          "team": { "id": 383734, "name": "Estudiantes de La Plata" },
+          "position": 1,
+          "points": 31,
+          "total": {
+            "wins": 9,
+            "draws": 4,
+            "games": 16,
+            "loses": 3,
+            "scoredGoals": 19,
+            "receivedGoals": 7
+          }
+        },
+        {
+          "team": { "id": 384585, "name": "Boca Juniors" },
+          "position": 2,
+          "points": 30,
+          "total": {
+            "wins": 8,
+            "draws": 6,
+            "games": 16,
+            "loses": 2,
+            "scoredGoals": 22,
+            "receivedGoals": 9
+          }
+        },
+        {
+          "team": { "id": 373522, "name": "Vélez Sarsfield" },
+          "position": 3,
+          "points": 28,
+          "total": {
+            "wins": 7,
+            "draws": 7,
+            "games": 16,
+            "loses": 2,
+            "scoredGoals": 18,
+            "receivedGoals": 12
+          }
+        },
+        {
+          "team": { "id": 388840, "name": "Talleres Córdoba" },
+          "position": 4,
+          "points": 26,
+          "total": {
+            "wins": 7,
+            "draws": 5,
+            "games": 16,
+            "loses": 4,
+            "scoredGoals": 17,
+            "receivedGoals": 13
+          }
+        },
+        {
+          "team": { "id": 386287, "name": "Independiente" },
+          "position": 5,
+          "points": 24,
+          "total": {
+            "wins": 6,
+            "draws": 6,
+            "games": 16,
+            "loses": 4,
+            "scoredGoals": 24,
+            "receivedGoals": 20
+          }
+        },
+        {
+          "team": { "id": 380330, "name": "Lanús" },
+          "position": 6,
+          "points": 24,
+          "total": {
+            "wins": 6,
+            "draws": 6,
+            "games": 16,
+            "loses": 4,
+            "scoredGoals": 18,
+            "receivedGoals": 15
+          }
+        },
+        {
+          "team": { "id": 392244, "name": "San Lorenzo de Almagro" },
+          "position": 7,
+          "points": 22,
+          "total": {
+            "wins": 5,
+            "draws": 7,
+            "games": 16,
+            "loses": 4,
+            "scoredGoals": 14,
+            "receivedGoals": 14
+          }
+        },
+        {
+          "team": { "id": 376075, "name": "Unión Santa Fe" },
+          "position": 8,
+          "points": 21,
+          "total": {
+            "wins": 5,
+            "draws": 6,
+            "games": 16,
+            "loses": 5,
+            "scoredGoals": 24,
+            "receivedGoals": 20
+          }
+        },
+        {
+          "team": { "id": 407562, "name": "Instituto Cordoba" },
+          "position": 9,
+          "points": 21,
+          "total": {
+            "wins": 6,
+            "draws": 3,
+            "games": 16,
+            "loses": 7,
+            "scoredGoals": 17,
+            "receivedGoals": 17
+          }
+        },
+        {
+          "team": { "id": 376926, "name": "Defensa y Justicia" },
+          "position": 10,
+          "points": 19,
+          "total": {
+            "wins": 4,
+            "draws": 7,
+            "games": 16,
+            "loses": 5,
+            "scoredGoals": 18,
+            "receivedGoals": 21
+          }
+        },
+        {
+          "team": { "id": 907950, "name": "Gimnasia M." },
+          "position": 11,
+          "points": 19,
+          "total": {
+            "wins": 5,
+            "draws": 4,
+            "games": 16,
+            "loses": 7,
+            "scoredGoals": 14,
+            "receivedGoals": 22
+          }
+        },
+        {
+          "team": { "id": 906248, "name": "Platense" },
+          "position": 12,
+          "points": 16,
+          "total": {
+            "wins": 3,
+            "draws": 7,
+            "games": 16,
+            "loses": 6,
+            "scoredGoals": 10,
+            "receivedGoals": 15
+          }
+        },
+        {
+          "team": { "id": 907099, "name": "Central Cordoba de Santiago" },
+          "position": 13,
+          "points": 16,
+          "total": {
+            "wins": 4,
+            "draws": 4,
+            "games": 16,
+            "loses": 8,
+            "scoredGoals": 11,
+            "receivedGoals": 21
+          }
+        },
+        {
+          "team": { "id": 389691, "name": "Newell’s Old Boys" },
+          "position": 14,
+          "points": 15,
+          "total": {
+            "wins": 3,
+            "draws": 6,
+            "games": 16,
+            "loses": 7,
+            "scoredGoals": 15,
+            "receivedGoals": 27
+          }
+        },
+        {
+          "team": { "id": 405860, "name": "Deportivo Riestra" },
+          "position": 15,
+          "points": 11,
+          "total": {
+            "wins": 1,
+            "draws": 8,
+            "games": 16,
+            "loses": 7,
+            "scoredGoals": 5,
+            "receivedGoals": 12
+          }
+        }
+      ]
+    },
+    {
+      "name": "Apertura - Group B",
+      "standings": [
+        {
+          "team": { "id": 403307, "name": "Independ. Rivadavia" },
+          "position": 1,
+          "points": 34,
+          "total": {
+            "wins": 10,
+            "draws": 4,
+            "games": 16,
+            "loses": 2,
+            "scoredGoals": 29,
+            "receivedGoals": 15
+          }
+        },
+        {
+          "team": { "id": 370969, "name": "River Plate" },
+          "position": 2,
+          "points": 29,
+          "total": {
+            "wins": 9,
+            "draws": 2,
+            "games": 16,
+            "loses": 5,
+            "scoredGoals": 22,
+            "receivedGoals": 12
+          }
+        },
+        {
+          "team": { "id": 390542, "name": "Argentinos Juniors" },
+          "position": 3,
+          "points": 29,
+          "total": {
+            "wins": 8,
+            "draws": 5,
+            "games": 16,
+            "loses": 3,
+            "scoredGoals": 17,
+            "receivedGoals": 13
+          }
+        },
+        {
+          "team": { "id": 372671, "name": "Rosario Central" },
+          "position": 4,
+          "points": 28,
+          "total": {
+            "wins": 8,
+            "draws": 4,
+            "games": 16,
+            "loses": 4,
+            "scoredGoals": 20,
+            "receivedGoals": 16
+          }
+        },
+        {
+          "team": { "id": 375224, "name": "Belgrano Cordoba" },
+          "position": 5,
+          "points": 26,
+          "total": {
+            "wins": 7,
+            "draws": 5,
+            "games": 16,
+            "loses": 4,
+            "scoredGoals": 17,
+            "receivedGoals": 13
+          }
+        },
+        {
+          "team": { "id": 370118, "name": "Gimnasia La Plata" },
+          "position": 6,
+          "points": 26,
+          "total": {
+            "wins": 8,
+            "draws": 2,
+            "games": 16,
+            "loses": 6,
+            "scoredGoals": 19,
+            "receivedGoals": 19
+          }
+        },
+        {
+          "team": { "id": 379479, "name": "Huracan" },
+          "position": 7,
+          "points": 22,
+          "total": {
+            "wins": 5,
+            "draws": 7,
+            "games": 16,
+            "loses": 4,
+            "scoredGoals": 17,
+            "receivedGoals": 13
+          }
+        },
+        {
+          "team": { "id": 371820, "name": "Racing Club" },
+          "position": 8,
+          "points": 21,
+          "total": {
+            "wins": 5,
+            "draws": 6,
+            "games": 16,
+            "loses": 5,
+            "scoredGoals": 17,
+            "receivedGoals": 15
+          }
+        },
+        {
+          "team": { "id": 2070416, "name": "Barracas Central" },
+          "position": 9,
+          "points": 21,
+          "total": {
+            "wins": 5,
+            "draws": 6,
+            "games": 16,
+            "loses": 5,
+            "scoredGoals": 15,
+            "receivedGoals": 15
+          }
+        },
+        {
+          "team": { "id": 385436, "name": "Tigre" },
+          "position": 10,
+          "points": 20,
+          "total": {
+            "wins": 4,
+            "draws": 8,
+            "games": 16,
+            "loses": 4,
+            "scoredGoals": 18,
+            "receivedGoals": 15
+          }
+        },
+        {
+          "team": { "id": 404158, "name": "Sarmiento de Junín" },
+          "position": 11,
+          "points": 19,
+          "total": {
+            "wins": 6,
+            "draws": 1,
+            "games": 16,
+            "loses": 9,
+            "scoredGoals": 13,
+            "receivedGoals": 20
+          }
+        },
+        {
+          "team": { "id": 382883, "name": "Banfield" },
+          "position": 12,
+          "points": 18,
+          "total": {
+            "wins": 5,
+            "draws": 3,
+            "games": 16,
+            "loses": 8,
+            "scoredGoals": 17,
+            "receivedGoals": 19
+          }
+        },
+        {
+          "team": { "id": 387989, "name": "Atlético Tucumán" },
+          "position": 13,
+          "points": 14,
+          "total": {
+            "wins": 3,
+            "draws": 5,
+            "games": 16,
+            "loses": 8,
+            "scoredGoals": 15,
+            "receivedGoals": 20
+          }
+        },
+        {
+          "team": { "id": 394797, "name": "Aldosivi" },
+          "position": 14,
+          "points": 8,
+          "total": {
+            "wins": 0,
+            "draws": 8,
+            "games": 16,
+            "loses": 8,
+            "scoredGoals": 6,
+            "receivedGoals": 19
+          }
+        },
+        {
+          "team": { "id": 2063608, "name": "Estudiantes de Rio Cuarto" },
+          "position": 15,
+          "points": 5,
+          "total": {
+            "wins": 1,
+            "draws": 2,
+            "games": 16,
+            "loses": 13,
+            "scoredGoals": 5,
+            "receivedGoals": 24
+          }
+        }
+      ]
+    },
+    {
+      "name": "Clausura - Group A",
+      "standings": [
+        {
+          "team": { "id": 407562, "name": "Instituto Cordoba" },
+          "position": 1,
+          "points": 34,
+          "total": {
+            "wins": 10,
+            "draws": 4,
+            "games": 16,
+            "loses": 2,
+            "scoredGoals": 26,
+            "receivedGoals": 15
+          }
+        },
+        {
+          "team": { "id": 384585, "name": "Boca Juniors" },
+          "position": 2,
+          "points": 33,
+          "total": {
+            "wins": 9,
+            "draws": 6,
+            "games": 16,
+            "loses": 1,
+            "scoredGoals": 24,
+            "receivedGoals": 14
+          }
+        },
+        {
+          "team": { "id": 373522, "name": "Vélez Sarsfield" },
+          "position": 3,
+          "points": 28,
+          "total": {
+            "wins": 7,
+            "draws": 7,
+            "games": 16,
+            "loses": 2,
+            "scoredGoals": 25,
+            "receivedGoals": 17
+          }
+        },
+        {
+          "team": { "id": 376926, "name": "Defensa y Justicia" },
+          "position": 4,
+          "points": 28,
+          "total": {
+            "wins": 8,
+            "draws": 4,
+            "games": 16,
+            "loses": 4,
+            "scoredGoals": 21,
+            "receivedGoals": 15
+          }
+        },
+        {
+          "team": { "id": 380330, "name": "Lanús" },
+          "position": 5,
+          "points": 26,
+          "total": {
+            "wins": 7,
+            "draws": 5,
+            "games": 16,
+            "loses": 4,
+            "scoredGoals": 19,
+            "receivedGoals": 12
+          }
+        },
+        {
+          "team": { "id": 389691, "name": "Newell’s Old Boys" },
+          "position": 6,
+          "points": 23,
+          "total": {
+            "wins": 5,
+            "draws": 8,
+            "games": 16,
+            "loses": 3,
+            "scoredGoals": 16,
+            "receivedGoals": 13
+          }
+        },
+        {
+          "team": { "id": 386287, "name": "Independiente" },
+          "position": 7,
+          "points": 23,
+          "total": {
+            "wins": 6,
+            "draws": 5,
+            "games": 16,
+            "loses": 5,
+            "scoredGoals": 15,
+            "receivedGoals": 16
+          }
+        },
+        {
+          "team": { "id": 907950, "name": "Gimnasia M." },
+          "position": 8,
+          "points": 22,
+          "total": {
+            "wins": 6,
+            "draws": 4,
+            "games": 16,
+            "loses": 6,
+            "scoredGoals": 18,
+            "receivedGoals": 17
+          }
+        },
+        {
+          "team": { "id": 376075, "name": "Unión Santa Fe" },
+          "position": 9,
+          "points": 21,
+          "total": {
+            "wins": 6,
+            "draws": 3,
+            "games": 16,
+            "loses": 7,
+            "scoredGoals": 24,
+            "receivedGoals": 24
+          }
+        },
+        {
+          "team": { "id": 906248, "name": "Platense" },
+          "position": 10,
+          "points": 20,
+          "total": {
+            "wins": 5,
+            "draws": 5,
+            "games": 16,
+            "loses": 6,
+            "scoredGoals": 18,
+            "receivedGoals": 20
+          }
+        },
+        {
+          "team": { "id": 392244, "name": "San Lorenzo de Almagro" },
+          "position": 11,
+          "points": 19,
+          "total": {
+            "wins": 5,
+            "draws": 4,
+            "games": 16,
+            "loses": 7,
+            "scoredGoals": 9,
+            "receivedGoals": 16
+          }
+        },
+        {
+          "team": { "id": 383734, "name": "Estudiantes de La Plata" },
+          "position": 12,
+          "points": 16,
+          "total": {
+            "wins": 4,
+            "draws": 4,
+            "games": 16,
+            "loses": 8,
+            "scoredGoals": 21,
+            "receivedGoals": 22
+          }
+        },
+        {
+          "team": { "id": 388840, "name": "Talleres Córdoba" },
+          "position": 13,
+          "points": 13,
+          "total": {
+            "wins": 3,
+            "draws": 4,
+            "games": 16,
+            "loses": 9,
+            "scoredGoals": 17,
+            "receivedGoals": 23
+          }
+        },
+        {
+          "team": { "id": 405860, "name": "Deportivo Riestra" },
+          "position": 14,
+          "points": 12,
+          "total": {
+            "wins": 2,
+            "draws": 6,
+            "games": 16,
+            "loses": 8,
+            "scoredGoals": 11,
+            "receivedGoals": 19
+          }
+        },
+        {
+          "team": { "id": 907099, "name": "Central Cordoba de Santiago" },
+          "position": 15,
+          "points": 11,
+          "total": {
+            "wins": 2,
+            "draws": 5,
+            "games": 16,
+            "loses": 9,
+            "scoredGoals": 12,
+            "receivedGoals": 26
+          }
+        }
+      ]
+    },
+    {
+      "name": "Clausura - Group B",
+      "standings": [
+        {
+          "team": { "id": 372671, "name": "Rosario Central" },
+          "position": 1,
+          "points": 34,
+          "total": {
+            "wins": 10,
+            "draws": 4,
+            "games": 16,
+            "loses": 2,
+            "scoredGoals": 26,
+            "receivedGoals": 12
+          }
+        },
+        {
+          "team": { "id": 390542, "name": "Argentinos Juniors" },
+          "position": 2,
+          "points": 31,
+          "total": {
+            "wins": 9,
+            "draws": 4,
+            "games": 16,
+            "loses": 3,
+            "scoredGoals": 20,
+            "receivedGoals": 14
+          }
+        },
+        {
+          "team": { "id": 370118, "name": "Gimnasia La Plata" },
+          "position": 3,
+          "points": 31,
+          "total": {
+            "wins": 9,
+            "draws": 4,
+            "games": 16,
+            "loses": 3,
+            "scoredGoals": 25,
+            "receivedGoals": 20
+          }
+        },
+        {
+          "team": { "id": 370969, "name": "River Plate" },
+          "position": 4,
+          "points": 26,
+          "total": {
+            "wins": 8,
+            "draws": 2,
+            "games": 16,
+            "loses": 6,
+            "scoredGoals": 21,
+            "receivedGoals": 14
+          }
+        },
+        {
+          "team": { "id": 2070416, "name": "Barracas Central" },
+          "position": 5,
+          "points": 26,
+          "total": {
+            "wins": 7,
+            "draws": 5,
+            "games": 16,
+            "loses": 4,
+            "scoredGoals": 17,
+            "receivedGoals": 13
+          }
+        },
+        {
+          "team": { "id": 375224, "name": "Belgrano Cordoba" },
+          "position": 6,
+          "points": 23,
+          "total": {
+            "wins": 6,
+            "draws": 5,
+            "games": 16,
+            "loses": 5,
+            "scoredGoals": 17,
+            "receivedGoals": 15
+          }
+        },
+        {
+          "team": { "id": 403307, "name": "Independ. Rivadavia" },
+          "position": 7,
+          "points": 23,
+          "total": {
+            "wins": 6,
+            "draws": 5,
+            "games": 16,
+            "loses": 5,
+            "scoredGoals": 21,
+            "receivedGoals": 24
+          }
+        },
+        {
+          "team": { "id": 379479, "name": "Huracan" },
+          "position": 8,
+          "points": 22,
+          "total": {
+            "wins": 6,
+            "draws": 4,
+            "games": 16,
+            "loses": 6,
+            "scoredGoals": 14,
+            "receivedGoals": 16
+          }
+        },
+        {
+          "team": { "id": 404158, "name": "Sarmiento de Junín" },
+          "position": 9,
+          "points": 21,
+          "total": {
+            "wins": 6,
+            "draws": 3,
+            "games": 16,
+            "loses": 7,
+            "scoredGoals": 23,
+            "receivedGoals": 24
+          }
+        },
+        {
+          "team": { "id": 385436, "name": "Tigre" },
+          "position": 10,
+          "points": 19,
+          "total": {
+            "wins": 5,
+            "draws": 4,
+            "games": 16,
+            "loses": 7,
+            "scoredGoals": 16,
+            "receivedGoals": 16
+          }
+        },
+        {
+          "team": { "id": 387989, "name": "Atlético Tucumán" },
+          "position": 11,
+          "points": 18,
+          "total": {
+            "wins": 4,
+            "draws": 6,
+            "games": 16,
+            "loses": 6,
+            "scoredGoals": 16,
+            "receivedGoals": 17
+          }
+        },
+        {
+          "team": { "id": 382883, "name": "Banfield" },
+          "position": 12,
+          "points": 15,
+          "total": {
+            "wins": 3,
+            "draws": 6,
+            "games": 16,
+            "loses": 7,
+            "scoredGoals": 18,
+            "receivedGoals": 25
+          }
+        },
+        {
+          "team": { "id": 371820, "name": "Racing Club" },
+          "position": 13,
+          "points": 15,
+          "total": {
+            "wins": 4,
+            "draws": 3,
+            "games": 16,
+            "loses": 9,
+            "scoredGoals": 16,
+            "receivedGoals": 24
+          }
+        },
+        {
+          "team": { "id": 394797, "name": "Aldosivi" },
+          "position": 14,
+          "points": 11,
+          "total": {
+            "wins": 3,
+            "draws": 2,
+            "games": 16,
+            "loses": 11,
+            "scoredGoals": 16,
+            "receivedGoals": 26
+          }
+        },
+        {
+          "team": { "id": 2063608, "name": "Estudiantes de Rio Cuarto" },
+          "position": 15,
+          "points": 9,
+          "total": {
+            "wins": 2,
+            "draws": 3,
+            "games": 16,
+            "loses": 11,
+            "scoredGoals": 10,
+            "receivedGoals": 23
+          }
+        }
+      ]
+    }
+  ]
+}

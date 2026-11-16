@@ -1,0 +1,91 @@
+{
+  "data": [
+    {
+      "id": 1403785705,
+      "round": "Round of 16",
+      "date": "2026-11-22T21:00:00.000Z",
+      "state": { "score": { "current": null, "penalties": null }, "description": "Not started" },
+      "homeTeam": {
+        "id": 373522,
+        "name": "Vélez Sarsfield",
+        "logo": "https://highlightly.net/soccer/images/teams/373522.png"
+      },
+      "awayTeam": {
+        "id": 375224,
+        "name": "Belgrano Cordoba",
+        "logo": "https://highlightly.net/soccer/images/teams/375224.png"
+      }
+    },
+    {
+      "id": 1314936199,
+      "round": "Apertura - Semi-finals",
+      "date": "2026-05-17T20:00:00.000Z",
+      "state": {
+        "score": { "current": "1 - 1", "penalties": "3 - 4" },
+        "description": "Finished after penalties"
+      },
+      "homeTeam": {
+        "id": 390542,
+        "name": "Argentinos Juniors",
+        "logo": "https://highlightly.net/soccer/images/teams/390542.png"
+      },
+      "awayTeam": {
+        "id": 375224,
+        "name": "Belgrano Cordoba",
+        "logo": "https://highlightly.net/soccer/images/teams/375224.png"
+      }
+    },
+    {
+      "id": 1269643426,
+      "round": "Apertura - 9",
+      "date": "2026-05-05T00:30:00.000Z",
+      "state": { "score": { "current": "0 - 2", "penalties": null }, "description": "Finished" },
+      "homeTeam": {
+        "id": 2063608,
+        "name": "Estudiantes de Rio Cuarto",
+        "logo": "https://highlightly.net/soccer/images/teams/2063608.png"
+      },
+      "awayTeam": {
+        "id": 407562,
+        "name": "Instituto Cordoba",
+        "logo": "https://highlightly.net/soccer/images/teams/407562.png"
+      }
+    },
+    {
+      "id": 1314668985,
+      "round": "Apertura - Quarter-finals",
+      "date": "2026-05-13T21:45:00.000Z",
+      "state": {
+        "score": { "current": "2 - 1", "penalties": null },
+        "description": "Finished after extra time"
+      },
+      "homeTeam": {
+        "id": 372671,
+        "name": "Rosario Central",
+        "logo": "https://highlightly.net/soccer/images/teams/372671.png"
+      },
+      "awayTeam": {
+        "id": 371820,
+        "name": "Racing Club",
+        "logo": "https://highlightly.net/soccer/images/teams/371820.png"
+      }
+    },
+    {
+      "id": 1270741216,
+      "round": "Clausura - 16",
+      "date": "2026-11-08T22:30:00.000Z",
+      "state": { "score": { "current": "1 - 1", "penalties": null }, "description": "Finished" },
+      "homeTeam": {
+        "id": 907099,
+        "name": "Central Cordoba de Santiago",
+        "logo": "https://highlightly.net/soccer/images/teams/907099.png"
+      },
+      "awayTeam": {
+        "id": 380330,
+        "name": "Lanús",
+        "logo": "https://highlightly.net/soccer/images/teams/380330.png"
+      }
+    }
+  ],
+  "pagination": { "totalCount": 503, "offset": 0, "limit": 100 }
+}
