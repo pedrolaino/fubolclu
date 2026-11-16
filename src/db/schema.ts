@@ -3,6 +3,7 @@ import {
   date,
   index,
   integer,
+  jsonb,
   pgTable,
   primaryKey,
   serial,
@@ -11,6 +12,8 @@ import {
 } from "drizzle-orm/pg-core";
 
 export type Competition = "liga-profesional" | "primera-nacional" | "copa-argentina";
+export type Tournament = "apertura" | "clausura";
+export type Phase = "league" | "knockout";
 export type MatchStatus = "scheduled" | "live" | "finished" | "postponed" | "cancelled";
 export type EventType =
   | "goal"
@@ -42,8 +45,8 @@ export const matches = pgTable(
     competition: text("competition").$type<Competition>().notNull(),
     season: integer("season").notNull(),
     roundLabel: text("round_label").notNull(),
-    tournament: text("tournament").$type<"apertura" | "clausura">(),
-    phase: text("phase").$type<"league" | "knockout">().notNull(),
+    tournament: text("tournament").$type<Tournament>(),
+    phase: text("phase").$type<Phase>().notNull(),
     matchday: integer("matchday"),
     kickoff: tz("kickoff").notNull(),
     status: text("status").$type<MatchStatus>().notNull(),
@@ -57,6 +60,8 @@ export const matches = pgTable(
     awayGoals: integer("away_goals"),
     homePenalties: integer("home_penalties"),
     awayPenalties: integer("away_penalties"),
+    // The provider's raw match statistics; nothing reads them yet but re-fetching costs quota.
+    stats: jsonb("stats"),
     detailsSyncedAt: tz("details_synced_at"),
     updatedAt: tz("updated_at").notNull(),
   },
@@ -78,9 +83,12 @@ export const matchEvents = pgTable(
       .references(() => teams.id),
     playerId: integer("player_id").references(() => players.id),
     playerName: text("player_name").notNull(),
+    // For substitutions the assist is the player coming on.
     assistPlayerId: integer("assist_player_id").references(() => players.id),
+    assistPlayerName: text("assist_player_name"),
     type: text("type").$type<EventType>().notNull(),
     minute: integer("minute").notNull(),
+    extraMinute: integer("extra_minute"),
   },
   (t) => [index("match_events_match_id_idx").on(t.matchId)],
 );
@@ -127,6 +135,12 @@ export const syncRuns = pgTable("sync_runs", {
   requestsUsed: integer("requests_used").notNull(),
   status: text("status").notNull(),
   error: text("error"),
+});
+
+// Last successful sync per resource, e.g. "matches:liga-profesional:2026".
+export const syncState = pgTable("sync_state", {
+  key: text("key").primaryKey(),
+  syncedAt: tz("synced_at").notNull(),
 });
 
 export const apiUsage = pgTable("api_usage", {
