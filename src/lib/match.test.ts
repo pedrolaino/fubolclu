@@ -68,6 +68,15 @@ describe("buildMatch hero", () => {
     );
   });
 
+  it("names no shoot-out winner when the penalties are level", () => {
+    const view = buildMatch(
+      withMatch({ homeGoals: 1, awayGoals: 1, homePenalties: 4, awayPenalties: 4 }),
+    );
+    expect(view.summary).toBe(
+      "Instituto y Newell's empataron 1-1 por la fecha 16 del Clausura, el domingo 8 de noviembre.",
+    );
+  });
+
   it("shows the kickoff time before the match", () => {
     const view = buildMatch(
       withMatch({
@@ -112,13 +121,13 @@ describe("buildMatch timeline", () => {
         e({ type: "yellow_card", teamId: 2, playerName: "Soto", minute: 90, extraMinute: 3 }),
         e({ type: "substitution", playerName: "Gil", assistPlayerName: "Paz", minute: 60 }),
         e({ type: "goal", assistPlayerName: "Paz", minute: 10 }),
-        // Credited to the other team.
+        // The provider gives an own goal the team it counts for, not the scorer's.
         e({ type: "own_goal", teamId: 2, playerName: "Vera", minute: 30 }),
       ],
     });
     expect(view.events.map((x) => [x.minute, x.side, x.title, x.detail])).toEqual([
       ["10'", "home", "Gol", "Ruiz, asistencia de Paz"],
-      ["30'", "home", "Gol en contra", "Vera"],
+      ["30'", "away", "Gol en contra", "Vera"],
       ["60'", "home", "Cambio", "Entra Paz por Gil"],
       ["90+3'", "away", "Amarilla", "Soto"],
     ]);

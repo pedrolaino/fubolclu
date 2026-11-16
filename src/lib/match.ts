@@ -1,5 +1,6 @@
 import type { EventType } from "@/db/schema";
 import { dayLabel, timeLabel } from "@/lib/dates";
+import { tieWinner } from "@/lib/results";
 import type { TeamView } from "@/lib/league";
 import { roundOf, toTeamView, type TeamData, type TeamMatch } from "@/lib/team";
 
@@ -45,11 +46,9 @@ const eventTitle: Record<EventType, string> = {
 };
 
 function timeline(data: MatchData): TimelineEvent[] {
-  const sideOf = (e: MatchData["events"][number]) => {
-    const own = e.teamId === data.match.homeTeamId;
-    // An own goal counts for the other team.
-    return own !== (e.type === "own_goal") ? "home" : "away";
-  };
+  // The provider gives an own goal the team it counts for, so no event needs flipping.
+  const sideOf = (e: MatchData["events"][number]) =>
+    e.teamId === data.match.homeTeamId ? "home" : "away";
   return data.events
     .toSorted((a, b) => a.minute - b.minute || (a.extraMinute ?? 0) - (b.extraMinute ?? 0))
     .map((e) => ({
@@ -157,7 +156,7 @@ function summary(data: MatchData) {
   const { match: m, home, away } = data;
   const round = roundOf(m);
   const day = dayLabel(m.kickoff);
-  const [hg, ag, hp, ap] = [m.homeGoals, m.awayGoals, m.homePenalties, m.awayPenalties];
+  const [hg, ag] = [m.homeGoals, m.awayGoals];
   const scored = hg !== null && ag !== null;
 
   if (m.status === "postponed" || m.status === "cancelled") {
@@ -176,8 +175,12 @@ function summary(data: MatchData) {
     return `${winner.name} le ganó ${high}-${low} a ${loser.name} por ${round}, el ${day}.`;
   }
   const draw = `${home.name} y ${away.name} empataron ${hg}-${ag} por ${round}, el ${day}`;
-  if (hp === null || ap === null) return `${draw}.`;
-  const [winner, high, low] = hp > ap ? [home, hp, ap] : [away, ap, hp];
+  const side = tieWinner(m);
+  if (!side) return `${draw}.`;
+  const [winner, high, low] =
+    side === "home"
+      ? [home, m.homePenalties, m.awayPenalties]
+      : [away, m.awayPenalties, m.homePenalties];
   return `${draw}, y ${winner.name} ganó ${high}-${low} en los penales.`;
 }
 
