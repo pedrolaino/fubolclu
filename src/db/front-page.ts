@@ -1,5 +1,4 @@
 import { and, between, eq } from "drizzle-orm";
-import { cacheTag } from "next/cache";
 import { currentSeason } from "@/config/seasons";
 import { db } from "@/db";
 import { matches, teams } from "@/db/schema";
@@ -9,10 +8,9 @@ import { buildFrontPage } from "@/lib/front-page";
 const week = 7 * 24 * 60 * 60 * 1000;
 
 // Last week's and next week's matches of every competition.
-// Cached until the sync revalidates the "data" tag, so "now" is the time of the last refresh.
+// Cached with the default lifetime (revalidated every 15 minutes), so "now" is at most that old.
 export async function loadFrontPage() {
   "use cache";
-  cacheTag("data");
   const now = new Date();
   const [teamRows, matchRows] = await Promise.all([
     db.select().from(teams),

@@ -1,14 +1,12 @@
 import { and, eq } from "drizzle-orm";
-import { cacheTag } from "next/cache";
 import { currentSeason } from "@/config/seasons";
 import { db } from "@/db";
 import { historicalPoints, matches, providerStandings, teams } from "@/db/schema";
 import { buildSeasonMap } from "@/lib/season-map";
 
-// Cached until the sync revalidates the "data" tag, so "now" is the time of the last refresh.
+// Cached with the default lifetime (revalidated every 15 minutes), so "now" is at most that old.
 export async function loadSeasonMap() {
   "use cache";
-  cacheTag("data");
   const config = currentSeason.competitions.find((c) => c.competition === "liga-profesional")!;
   const season = (competition: "liga-profesional" | "copa-argentina") =>
     and(eq(matches.competition, competition), eq(matches.season, currentSeason.season));

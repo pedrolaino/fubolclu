@@ -1,5 +1,4 @@
 import { and, asc, eq, inArray, or } from "drizzle-orm";
-import { cacheTag } from "next/cache";
 import { db } from "@/db";
 import { matchEvents, matches, providerStandings, teams } from "@/db/schema";
 import { currentSeason } from "@/config/seasons";
@@ -31,7 +30,6 @@ export async function teamSlugs() {
 // A team's page: its table position, results and scorers. Null for an unknown slug.
 export async function loadTeam(slug: string) {
   "use cache";
-  cacheTag("data");
   const [team] = await db.select().from(teams).where(eq(teams.slug, slug));
   if (!team) return null;
   const season = currentSeason.season;

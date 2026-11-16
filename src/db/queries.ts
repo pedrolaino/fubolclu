@@ -1,5 +1,4 @@
 import { and, asc, eq, inArray, max } from "drizzle-orm";
-import { cacheTag } from "next/cache";
 import { db } from "@/db";
 import {
   historicalPoints,
@@ -47,10 +46,9 @@ async function leagueData(competition: Competition, season: number): Promise<Lea
 }
 
 // Tables and rounds of a league, as the page shows them.
-// Cached until the sync revalidates the "data" tag, so "now" is the time of the last refresh.
+// Cached with the default lifetime (revalidated every 15 minutes), so "now" is at most that old.
 export async function loadLeague(competition: Competition) {
   "use cache";
-  cacheTag("data");
   const config = currentSeason.competitions.find((c) => c.competition === competition)!;
   return buildLeague(await leagueData(competition, currentSeason.season), config, new Date());
 }
@@ -58,7 +56,6 @@ export async function loadLeague(competition: Competition) {
 // When the data last changed, for the footer.
 export async function loadSyncedAt() {
   "use cache";
-  cacheTag("data");
   const [row] = await db.select({ at: max(syncState.syncedAt) }).from(syncState);
   return row?.at ?? null;
 }

@@ -1,5 +1,4 @@
 import { asc, desc, eq, inArray } from "drizzle-orm";
-import { cacheTag } from "next/cache";
 import { db } from "@/db";
 import { matchEvents, matches, teams } from "@/db/schema";
 import { buildMatch } from "@/lib/match";
@@ -17,7 +16,6 @@ export async function sampleMatchIds(count: number) {
 // A match with its events and statistics. Null for an unknown id.
 export async function loadMatch(id: number) {
   "use cache";
-  cacheTag("data");
   const [match] = await db.select().from(matches).where(eq(matches.id, id));
   if (!match) return null;
   const [pair, events] = await Promise.all([
