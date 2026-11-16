@@ -28,6 +28,8 @@ export interface CompetitionSeason {
 
 export interface SeasonConfig {
   season: number;
+  // A closing line for the season map, e.g. a format change coming the next year.
+  note?: string;
   // In sync priority order.
   competitions: CompetitionSeason[];
 }

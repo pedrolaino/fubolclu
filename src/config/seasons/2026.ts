@@ -2,6 +2,7 @@ import type { SeasonConfig } from "./types";
 
 export const season2026: SeasonConfig = {
   season: 2026,
+  note: "En 2027 se terminan las zonas: los 30 equipos juegan un solo torneo de todos contra todos.",
   competitions: [
     {
       competition: "liga-profesional",

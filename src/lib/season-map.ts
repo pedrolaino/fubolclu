@@ -1,4 +1,4 @@
-import type { CompetitionSeason } from "@/config/seasons/types";
+import type { SeasonConfig } from "@/config/seasons/types";
 import { dayLabel } from "@/lib/dates";
 import {
   buildLeague,
@@ -10,6 +10,15 @@ import {
   type TeamView,
 } from "@/lib/league";
 import { paint } from "@/lib/paint";
+import {
+  contestName,
+  isUpcoming,
+  ofContest,
+  tableState,
+  tieWinner,
+  unplayed,
+  withArticle,
+} from "@/lib/results";
 
 export type SourceKey = "apertura" | "clausura" | "anual" | "copa-argentina" | "promedios";
 type Contest = "apertura" | "clausura" | "copa-argentina";
@@ -60,6 +69,9 @@ export interface Slot {
 export interface SeasonMap {
   leader: TeamView;
   summary: string;
+  libertadoresYear: number;
+  // The season's closing line, when its config has one.
+  note: string | null;
   sources: SourceView[];
   seats: SeatView[];
   libertadores: Slot[];
@@ -68,9 +80,6 @@ export interface SeasonMap {
   teams: TeamView[];
   contests: { key: Contest; withArticle: string; champion: number | null; alive: number[] }[];
 }
-
-const isPending = (m: LeagueMatch) =>
-  m.status === "scheduled" || m.status === "live" || m.status === "postponed";
 
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 const list = (xs: string[]) =>
@@ -86,16 +95,12 @@ const phrase = (round: string) =>
       ? "las semifinales"
       : `los ${round.toLowerCase()}`;
 
-// Single-match ties: goals decide, then penalties.
 function winner(m: LeagueMatch) {
-  if (m.status !== "finished" || m.homeGoals === null || m.awayGoals === null) return null;
-  if (m.homeGoals !== m.awayGoals) return m.homeGoals > m.awayGoals ? m.homeTeamId : m.awayTeamId;
-  const { homePenalties: h, awayPenalties: a } = m;
-  if (h === null || a === null || h === a) return null;
-  return h > a ? m.homeTeamId : m.awayTeamId;
+  const side = tieWinner(m);
+  return side === null ? null : side === "home" ? m.homeTeamId : m.awayTeamId;
 }
 
-function bracket(matches: LeagueMatch[], names: (id: number) => string) {
+function bracket(matches: LeagueMatch[], names: (id: number) => string, now: Date) {
   const sorted = [...matches].sort((a, b) => a.kickoff.getTime() - b.kickoff.getTime());
   // Latest round each team played, and whether it went out there.
   const reached = new Map<number, { round: string; out: boolean }>();
@@ -108,7 +113,7 @@ function bracket(matches: LeagueMatch[], names: (id: number) => string) {
   const final = sorted.find((m) => roundName(m) === "Final");
   const champion = final ? winner(final) : null;
   const alive = champion ? [champion] : [...reached].filter(([, r]) => !r.out).map(([id]) => id);
-  const next = sorted.find(isPending);
+  const next = sorted.find((m) => isUpcoming(m, now));
 
   let finalLine = "";
   if (final && champion !== null) {
@@ -129,7 +134,7 @@ function bracket(matches: LeagueMatch[], names: (id: number) => string) {
     if (champion === id) return "Campeón.";
     if (r.out)
       return r.round === "Final" ? "Perdió la final." : `Quedó afuera en ${phrase(r.round)}.`;
-    const own = sorted.find((m) => isPending(m) && (m.homeTeamId === id || m.awayTeamId === id));
+    const own = sorted.find((m) => unplayed(m) && (m.homeTeamId === id || m.awayTeamId === id));
     if (own) return `Sigue vivo: juega ${phrase(roundName(own))}.`;
     return alive.length === 2 ? "Es finalista." : "Sigue vivo.";
   };
@@ -147,9 +152,12 @@ function bracket(matches: LeagueMatch[], names: (id: number) => string) {
 export function buildSeasonMap(
   data: LeagueData,
   cupMatches: LeagueMatch[],
-  config: CompetitionSeason,
+  season: SeasonConfig,
   now: Date,
 ): SeasonMap | null {
+  const config = season.competitions.find((c) => c.competition === "liga-profesional");
+  if (!config) return null;
+  const year = season.season + 1;
   const league = buildLeague(data, config, now);
   const annual = league.tabs.find((t) => t.kind === "table" && t.key === "anual");
   if (annual?.kind !== "table" || !config.annual) return null;
@@ -159,20 +167,29 @@ export function buildSeasonMap(
   const views = new Map(data.teams.map((t) => [t.id, { ...t, ...paint(t.id) }]));
   const team = (id: number) => views.get(id)!;
   const doors = config.libertadoresDoors ?? [];
-  const annualOver = !data.matches.some((m) => m.phase === "league" && isPending(m));
+  const leagueMatches = data.matches.filter((m) => m.phase === "league");
   const knockouts = (tournament: Contest) =>
     data.matches.filter((m) => m.phase === "knockout" && m.tournament === tournament);
   const brackets: Record<Contest, ReturnType<typeof bracket>> = {
-    apertura: bracket(knockouts("apertura"), (id) => team(id).name),
-    clausura: bracket(knockouts("clausura"), (id) => team(id).name),
-    "copa-argentina": bracket(cupMatches, (id) => team(id).name),
+    apertura: bracket(knockouts("apertura"), (id) => team(id).name, now),
+    clausura: bracket(knockouts("clausura"), (id) => team(id).name, now),
+    "copa-argentina": bracket(cupMatches, (id) => team(id).name, now),
   };
+  // A tournament starts with its first league match.
+  const kickedOff = (key: Contest) =>
+    leagueMatches.some((m) => m.tournament === key && m.kickoff <= now);
 
   const rows: TableRow[] = annual.rows;
   const first = rows[0];
-  const lastRows = rows.slice(-config.annual.relegated).reverse();
-  const worstAverages = averageRows.slice(-(config.averages?.relegated ?? 0)).reverse();
-  const annualState: State = annualOver ? "decided" : "today";
+  const annualTable = tableState(rows, leagueMatches);
+  const annualStarted = annualTable !== "unstarted";
+  const annualOver = annualTable === "over";
+  const lastRows = annualStarted ? rows.slice(-config.annual.relegated).reverse() : [];
+  // Teams without games have no average and can't be the worst.
+  const rankedAverages = averageRows.filter((r) => r.played > 0);
+  const worstAverages = rankedAverages.slice(-(config.averages?.relegated ?? 0)).reverse();
+  const annualState: State = !annualStarted ? "open" : annualOver ? "decided" : "today";
+  const averagesState: State = !rankedAverages.length ? "open" : annualOver ? "decided" : "today";
   const top = config.zoneLines?.find((l) => "top" in l);
   const spots = top && "top" in top ? top.top : undefined;
   const knockoutsAbout = spots
@@ -180,7 +197,7 @@ export function buildSeasonMap(
     : "";
   const leadsTo = (door: Contest) =>
     [
-      doors.includes(door) ? "entra a la Libertadores 2027" : "",
+      doors.includes(door) ? `entra a la Libertadores ${year}` : "",
       config.trofeoDeCampeones && door !== "copa-argentina" ? "juega el Trofeo de Campeones" : "",
     ]
       .filter(Boolean)
@@ -190,25 +207,26 @@ export function buildSeasonMap(
     const b = brackets[key];
     if (b.champion !== null) return b.finalLine;
     if (!b.started) {
-      return key === "copa-argentina"
-        ? "Todavía no hay partidos de la copa cargados."
-        : `Todavía se juega la fase de zonas. ${knockoutsAbout}`.trim();
+      if (key === "copa-argentina") return "Todavía no hay partidos de la copa cargados.";
+      if (!kickedOff(key)) return "Todavía no empezó.";
+      return `Todavía se juega la fase de zonas. ${knockoutsAbout}`.trim();
     }
+    const alive = `${b.alive.length === 1 ? "Sigue vivo" : "Siguen vivos"} ${plural(b.alive.length, "equipo", "equipos")}.`;
     if (!b.next) {
       return b.alive.length === 2
         ? "Ya están los dos finalistas y la final todavía no tiene fecha."
-        : `Siguen vivos ${b.alive.length} equipos.`;
+        : alive;
     }
     const verb = b.next.round === "Final" ? "se juega" : "se juegan";
-    return `Siguen vivos ${b.alive.length} equipos. ${upper(phrase(b.next.round))} ${verb} el ${b.next.day}.`;
+    return `${alive} ${upper(phrase(b.next.round))} ${verb} el ${b.next.day}.`;
   }
 
-  const contestSeat = (key: Contest, name: string): SeatView => {
+  const contestSeat = (key: Contest): SeatView => {
     const b = brackets[key];
     const decided = b.champion !== null;
     return {
       key: key === "copa-argentina" ? key : `campeon-${key}`,
-      name,
+      name: key === "copa-argentina" ? `Ganador ${ofContest(key)}` : `Campeón ${ofContest(key)}`,
       source: key,
       state: decided ? "decided" : "open",
       line: contestLine(key),
@@ -216,47 +234,44 @@ export function buildSeasonMap(
       entries: b.alive.map((id) => ({ team: team(id), note: "" })),
     };
   };
-  const openContests = (["clausura", "copa-argentina"] as const).filter(
-    (k) => brackets[k].champion === null && brackets[k].started,
-  );
+  const openContests = doors.filter((k) => brackets[k].champion === null && brackets[k].started);
+  const aliveNames = (id: number) =>
+    openContests.filter((k) => brackets[k].alive.includes(id)).map(withArticle);
 
   // Libertadores: the champions first, then down the annual table skipping those already in.
-  const taken = new Set(
-    (["apertura", "clausura", "copa-argentina"] as const).flatMap((k) => {
-      const id = brackets[k].champion;
-      return id !== null && doors.includes(k) ? [id] : [];
-    }),
-  );
-  const annualPlaces = rows
-    .filter((r) => !taken.has(r.team.id))
-    .slice(0, config.annual.libertadores);
-  const doorLabel: Record<Contest, string> = {
-    apertura: "Campeón del Apertura",
-    clausura: "Campeón del Clausura",
-    "copa-argentina": "Copa Argentina",
-  };
-  const libertadores: Slot[] = [
-    ...doors.map((door): Slot => {
-      const id = brackets[door].champion;
-      return {
+  // A club holds one place, so a second door it wins frees a place for the annual table.
+  const taken = new Set<number>();
+  const doorSlots = doors.flatMap((door): Slot[] => {
+    const id = brackets[door].champion;
+    if (id !== null && taken.has(id)) return [];
+    if (id !== null) taken.add(id);
+    return [
+      {
         door,
-        label: doorLabel[door],
+        label: door === "copa-argentina" ? contestName(door) : `Campeón ${ofContest(door)}`,
         team: id === null ? null : team(id),
         state: id === null ? "open" : "decided",
-      };
-    }),
-    ...annualPlaces.map((r): Slot => ({
+      },
+    ];
+  });
+  const annualCount = config.annual.libertadores + doors.length - doorSlots.length;
+  const annualPlaces = annualStarted
+    ? rows.filter((r) => !taken.has(r.team.id)).slice(0, annualCount)
+    : [];
+  // The annual places are final only when none of their holders can still get in another way.
+  const placesState: State =
+    annualState === "decided" && annualPlaces.some((r) => aliveNames(r.team.id).length)
+      ? "today"
+      : annualState;
+  const libertadores: Slot[] = [
+    ...doorSlots,
+    ...(annualStarted ? annualPlaces : Array<null>(annualCount).fill(null)).map((r): Slot => ({
       door: "anual",
       label: "Tabla anual",
-      team: r.team,
-      state: annualState,
+      team: r?.team ?? null,
+      state: placesState,
     })),
   ];
-
-  const aliveNames = (id: number) =>
-    openContests
-      .filter((k) => brackets[k].alive.includes(id))
-      .map((k) => contestName[k].withArticle);
 
   const annualEntry = (r: TableRow, extra = ""): Entry => ({
     team: r.team,
@@ -269,16 +284,17 @@ export function buildSeasonMap(
     : first.points === second.points
       ? ` Igualado en puntos con ${second.team.name}.`
       : ` Le lleva ${plural(first.points - second.points, "punto", "puntos")} a ${second.team.name}.`;
-  const pendingCount = data.matches.filter((m) => m.phase === "league" && isPending(m)).length;
+  const pendingCount = leagueMatches.filter(unplayed).length;
+  const nothingPlayed = "Todavía no se jugó ningún partido de la tabla anual.";
 
   const seats: SeatView[] = [
-    contestSeat("apertura", "Campeón del Apertura"),
-    contestSeat("clausura", "Campeón del Clausura"),
+    contestSeat("apertura"),
+    contestSeat("clausura"),
     ...(doors.includes("copa-argentina")
       ? [
           {
-            ...contestSeat("copa-argentina", "Ganador de la Copa Argentina"),
-            then: "El ganador entra a la Libertadores 2027.",
+            ...contestSeat("copa-argentina"),
+            then: `El ganador entra a la Libertadores ${year}.`,
           },
         ]
       : []),
@@ -287,18 +303,20 @@ export function buildSeasonMap(
       name: "Campeón de Liga",
       source: "anual",
       state: annualState,
-      line: annualOver
-        ? "Terminó primero en la tabla anual."
-        : `Primero en la tabla anual, con ${plural(pendingCount, "partido", "partidos")} por jugarse.${margin}`,
+      line: !annualStarted
+        ? nothingPlayed
+        : annualOver
+          ? "Terminó primero en la tabla anual."
+          : `Primero en la tabla anual, con ${plural(pendingCount, "partido", "partidos")} por jugarse.${margin}`,
       then: "",
-      entries: [annualEntry(first, annualOver ? margin : "")],
+      entries: annualStarted ? [annualEntry(first, annualOver ? margin : "")] : [],
     },
     {
       key: "libertadores-anual",
       name: "Libertadores por la tabla anual",
       source: "anual",
-      state: annualState,
-      line: `Los ${config.annual.libertadores} mejores de la tabla que no entraron por otra vía.`,
+      state: placesState,
+      line: `Los ${annualCount} mejores de la tabla que no entraron por otra vía.`,
       then: "",
       entries: annualPlaces.map((r) => {
         const alive = aliveNames(r.team.id);
@@ -325,7 +343,7 @@ export function buildSeasonMap(
             key: "descenso-promedio",
             name: "Desciende por el promedio",
             source: "promedios" as const,
-            state: annualState,
+            state: averagesState,
             line: "El de peor promedio baja a la Primera Nacional.",
             then: "",
             entries: worstAverages.map((r) => ({
@@ -349,52 +367,52 @@ export function buildSeasonMap(
   };
   const trofeo = config.trofeoDeCampeones
     ? (() => {
-        const teams = [champion("apertura"), champion("clausura")];
-        const known = teams.filter((t) => t !== null);
+        const [a, c] = [champion("apertura"), champion("clausura")];
         return {
-          state: (known.length === 2 ? "decided" : "open") as State,
-          teams,
+          state: (a && c && a.id !== c.id ? "decided" : "open") as State,
+          teams: [a, c],
+          // TODO: who plays a club that won both tournaments is not modelled.
           line:
-            known.length === 2
-              ? `Se juega entre ${known[0].name} y ${known[1].name}.`
-              : known.length === 1
-                ? `Ya está ${known[0].name}. Falta el campeón del ${teams[0] ? "Clausura" : "Apertura"}.`
+            a && c
+              ? a.id === c.id
+                ? `${a.name} ganó el Apertura y el Clausura. Su rival todavía no está definido.`
+                : `Se juega entre ${a.name} y ${c.name}.`
+              : a || c
+                ? `Ya está ${(a ?? c)!.name}. Falta el campeón ${ofContest(a ? "clausura" : "apertura")}.`
                 : "Faltan los dos campeones.",
         };
       })()
     : null;
 
   const everyone = new Set([...rows.map((r) => r.team.id), ...brackets["copa-argentina"].alive]);
+  const tournamentStatus = (key: Contest) =>
+    brackets[key].champion !== null
+      ? "Terminó"
+      : brackets[key].started
+        ? "En cruces"
+        : kickedOff(key)
+          ? "En zonas"
+          : "Todavía no empezó";
   const sources: SourceView[] = [
     {
       key: "apertura",
-      name: "Apertura",
+      name: contestName("apertura"),
       href: null,
       about: `Primer torneo del año. ${knockoutsAbout}`.trim(),
-      status:
-        brackets.apertura.champion !== null
-          ? "Terminó"
-          : brackets.apertura.started
-            ? "En cruces"
-            : "En zonas",
+      status: tournamentStatus("apertura"),
       places: {},
     },
     {
       key: "clausura",
-      name: "Clausura",
+      name: contestName("clausura"),
       href: "/liga-profesional",
       about: `Segundo torneo del año. ${knockoutsAbout}`.trim(),
-      status:
-        brackets.clausura.champion !== null
-          ? "Terminó"
-          : brackets.clausura.started
-            ? "En cruces"
-            : "En zonas",
+      status: tournamentStatus("clausura"),
       places: {},
     },
     {
       key: "copa-argentina",
-      name: "Copa Argentina",
+      name: contestName("copa-argentina"),
       href: "/copa-argentina",
       about: "Eliminación directa a un partido.",
       status: brackets["copa-argentina"].champion !== null ? "Terminó" : "En juego",
@@ -406,7 +424,9 @@ export function buildSeasonMap(
       href: "/liga-profesional#anual",
       about:
         "Suma los puntos de la fase de zonas del Apertura y del Clausura. Los cruces no cuentan.",
-      status: annualOver ? "Cerrada" : `Faltan ${plural(pendingCount, "partido", "partidos")}`,
+      status: annualOver
+        ? "Cerrada"
+        : `${pendingCount === 1 ? "Falta" : "Faltan"} ${plural(pendingCount, "partido", "partidos")}`,
       places: {},
     },
     ...(averages
@@ -430,7 +450,11 @@ export function buildSeasonMap(
         if (i >= 0) s.places[id] = `${i + 1}º con ${plural(rows[i].points, "punto", "puntos")}.`;
       } else if (s.key === "promedios") {
         const i = averageRows.findIndex((r) => r.team.id === id);
-        if (i >= 0) s.places[id] = `${i + 1}º con promedio ${comma(averageRows[i].average)}.`;
+        if (i >= 0) {
+          s.places[id] = averageRows[i].played
+            ? `${i + 1}º con promedio ${comma(averageRows[i].average)}.`
+            : "Todavía no tiene promedio.";
+        }
       } else if (brackets[bracketKey].started) {
         s.places[id] = brackets[bracketKey].place(id);
       }
@@ -441,10 +465,14 @@ export function buildSeasonMap(
   return {
     leader: first.team,
     summary: `${
-      annualOver
-        ? `Terminó primero en la tabla anual con ${points} y es el Campeón de Liga.`
-        : `Lidera la tabla anual con ${points}.`
-    } Acá se ve quién entra a la Libertadores 2027, quién baja y qué falta definir.`,
+      !annualStarted
+        ? nothingPlayed
+        : annualOver
+          ? `Terminó primero en la tabla anual con ${points} y es el Campeón de Liga.`
+          : `Lidera la tabla anual con ${points}.`
+    } Acá se ve quién entra a la Libertadores ${year}, quién baja y qué falta definir.`,
+    libertadoresYear: year,
+    note: season.note ?? null,
     sources,
     seats,
     libertadores,
@@ -453,25 +481,17 @@ export function buildSeasonMap(
     teams: [...everyone].map(team).sort((a, b) => a.name.localeCompare(b.name, "es")),
     contests: (["apertura", "clausura", "copa-argentina"] as const).map((key) => ({
       key,
-      withArticle: contestName[key].withArticle,
+      withArticle: withArticle(key),
       champion: brackets[key].champion,
       alive: brackets[key].alive,
     })),
   };
 }
 
-const contestName: Record<Contest, { withArticle: string }> = {
-  apertura: { withArticle: "el Apertura" },
-  clausura: { withArticle: "el Clausura" },
-  "copa-argentina": { withArticle: "la Copa Argentina" },
-};
-
-const doorPhrase: Record<Slot["door"], string> = {
-  apertura: "como campeón del Apertura",
-  clausura: "como campeón del Clausura",
-  "copa-argentina": "como ganador de la Copa Argentina",
-  anual: "por la tabla anual",
-};
+const doorPhrase = (door: Slot["door"]) =>
+  door === "anual"
+    ? "por la tabla anual"
+    : `como ${door === "copa-argentina" ? "ganador" : "campeón"} ${ofContest(door)}`;
 
 // Every seat a team is in, and the one sentence that says so.
 export function describeTeam(map: SeasonMap, teamId: number) {
@@ -489,7 +509,7 @@ export function describeTeam(map: SeasonMap, teamId: number) {
   const slot = map.libertadores.find((s) => s.team?.id === teamId);
   if (slot) {
     clauses.push(
-      `${slot.state === "decided" ? "ya está" : "entraría"} en la Libertadores 2027 ${doorPhrase[slot.door]}`,
+      `${slot.state === "decided" ? "ya está" : "entraría"} en la Libertadores ${map.libertadoresYear} ${doorPhrase(slot.door)}`,
     );
   }
   const byAnnual = holds("descenso-anual");
@@ -508,9 +528,12 @@ export function describeTeam(map: SeasonMap, teamId: number) {
   const alive = map.contests.filter((c) => c.champion === null && c.alive.includes(teamId));
   if (alive.length) {
     const where = list(alive.map((c) => `en ${c.withArticle}`));
-    // Winning either gives a Libertadores place.
+    // Winning any of them gives a Libertadores place.
+    const gives = alive.length === 1 ? "que da" : "que dan";
     clauses.push(
-      slot ? `sigue vivo ${where}` : `sigue vivo ${where}, que da lugar en la Libertadores 2027`,
+      slot
+        ? `sigue vivo ${where}`
+        : `sigue vivo ${where}, ${gives} lugar en la Libertadores ${map.libertadoresYear}`,
     );
   }
 

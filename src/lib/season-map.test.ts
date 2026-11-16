@@ -72,8 +72,15 @@ const cup = [
   knockout(5, 4, [1, 0], "Semi-finals", { tournament: null }),
 ];
 
-function build(matches: LeagueMatch[], history: LeagueData["history"] = []) {
-  return buildSeasonMap({ teams, groups, matches, goals: [], history }, cup, config, now)!;
+const season = { ...season2026, competitions: [config] };
+
+function build(
+  matches: LeagueMatch[],
+  history: LeagueData["history"] = [],
+  cupMatches = cup,
+  at = now,
+) {
+  return buildSeasonMap({ teams, groups, matches, goals: [], history }, cupMatches, season, at)!;
 }
 const seat = (map: ReturnType<typeof build>, key: string) => map.seats.find((s) => s.key === key)!;
 const names = (entries: { team: { name: string } }[]) => entries.map((e) => e.team.name);
@@ -149,6 +156,83 @@ describe("buildSeasonMap", () => {
     expect(map.leader.name).toBe("Alfa");
     expect(map.summary).toMatch(/^Terminó primero en la tabla anual con 6 puntos/);
   });
+
+  it("keeps the annual table open while a league match is postponed", () => {
+    const postponed = match(2, 3, null, { status: "postponed" });
+    const open = build([...leagueMatches, postponed, ...tournaments]);
+    expect(seat(open, "campeon-liga").state).toBe("today");
+    expect(open.sources.find((s) => s.key === "anual")!.status).toBe("Falta 1 partido");
+  });
+
+  it("calls the annual places final only when no holder can still win a door", () => {
+    expect(seat(map, "libertadores-anual").state).toBe("today");
+    expect(map.libertadores.at(-1)!.state).toBe("today");
+    const settled = build(
+      [
+        ...leagueMatches,
+        knockout(1, 2, [1, 1], "Apertura - Final", {
+          ...apertura,
+          homePenalties: 4,
+          awayPenalties: 5,
+        }),
+        knockout(4, 6, [2, 0], "Final"),
+      ],
+      [],
+      [...cup, knockout(5, 1, [1, 0], "Final", { tournament: null })],
+    );
+    expect(seat(settled, "libertadores-anual").state).toBe("decided");
+  });
+
+  it("gives a club that wins two doors one place and the freed one to the annual table", () => {
+    const double = build([...leagueMatches, tournaments[0], knockout(2, 4, [1, 0], "Final")]);
+    expect(double.libertadores.map((s) => [s.door, s.team?.name ?? null])).toEqual([
+      ["apertura", "Bravo"],
+      ["copa-argentina", null],
+      ["anual", "Alfa"],
+      ["anual", "Eco"],
+      ["anual", "Charly"],
+      ["anual", "Delta"],
+    ]);
+    expect(double.trofeo?.line).toBe(
+      "Bravo ganó el Apertura y el Clausura. Su rival todavía no está definido.",
+    );
+  });
+
+  it("says a tournament has not started before its first league match", () => {
+    const later = new Date("2026-12-01T21:00:00Z");
+    const early = build([
+      ...leagueMatches.slice(0, 3),
+      tournaments[0],
+      match(1, 3, null, { kickoff: later }),
+    ]);
+    expect(early.sources.find((s) => s.key === "clausura")!.status).toBe("Todavía no empezó");
+    expect(seat(early, "campeon-clausura").line).toBe("Todavía no empezó.");
+    const zones = build([...leagueMatches, tournaments[0]]);
+    expect(zones.sources.find((s) => s.key === "clausura")!.status).toBe("En zonas");
+  });
+
+  it("claims no leader before any league match is played", () => {
+    const fixtures = [match(1, 2, null, apertura), match(3, 4, null, apertura)];
+    const empty = build(fixtures, [], []);
+    expect(empty.summary).toMatch(/^Todavía no se jugó ningún partido de la tabla anual\./);
+    expect(seat(empty, "campeon-liga")).toMatchObject({ state: "open", entries: [] });
+    expect(empty.libertadores.filter((s) => s.team)).toEqual([]);
+    expect(describeTeam(empty, 1)).toBe(
+      "Alfa no está en ninguna plaza por ahora: ni de Libertadores ni de descenso.",
+    );
+  });
+
+  it("takes the Libertadores year and the closing note from the season", () => {
+    const later = buildSeasonMap(
+      { teams, groups, matches: leagueMatches, goals: [], history: [] },
+      cup,
+      { season: 2030, competitions: [config] },
+      now,
+    )!;
+    expect(later.libertadoresYear).toBe(2031);
+    expect(later.note).toBeNull();
+    expect(map.note).toMatch(/^En 2027 se terminan las zonas/);
+  });
 });
 
 describe("describeTeam", () => {
@@ -156,13 +240,24 @@ describe("describeTeam", () => {
 
   it("writes where a team stands", () => {
     expect(describeTeam(map, 1)).toBe(
-      "Alfa es Campeón de Liga, ya está en la Libertadores 2027 por la tabla anual y sigue vivo en el Clausura y en la Copa Argentina.",
+      "Alfa es Campeón de Liga, entraría en la Libertadores 2027 por la tabla anual y sigue vivo en el Clausura y en la Copa Argentina.",
     );
     expect(describeTeam(map, 2)).toBe(
       "Bravo ya está en la Libertadores 2027 como campeón del Apertura, va al Trofeo de Campeones y sigue vivo en el Clausura.",
     );
     expect(describeTeam(map, 6)).toBe(
       "Foxtrot desciende a la Primera Nacional: es el último de la tabla anual y también tiene el peor promedio.",
+    );
+  });
+
+  it("agrees with the number of contests a team is alive in", () => {
+    const delta = build(
+      [...leagueMatches, ...tournaments],
+      [],
+      [cup[0], knockout(4, 5, [1, 0], "Semi-finals", { tournament: null })],
+    );
+    expect(describeTeam(delta, 4)).toBe(
+      "Delta sigue vivo en el Clausura y en la Copa Argentina, que dan lugar en la Libertadores 2027.",
     );
   });
 

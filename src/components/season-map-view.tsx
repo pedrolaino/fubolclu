@@ -177,12 +177,12 @@ export function SeasonMapView({ map }: { map: SeasonMap }) {
         <h2 className="display mt-16 mb-6 text-[44px] wide:text-[56px]">Lo que reparten</h2>
         <div className="grid gap-10 wide:grid-cols-2 wide:gap-14">
           <section className="border-t-[6px] border-ink pt-4">
-            <h3 className="display text-[40px]">Copa Libertadores 2027</h3>
+            <h3 className="display text-[40px]">Copa Libertadores {map.libertadoresYear}</h3>
             <p className="mt-2 mb-3 text-sm text-mute">Seis lugares, cada uno con su puerta.</p>
             <ul>
-              {map.libertadores.map((slot) => (
+              {map.libertadores.map((slot, i) => (
                 <li
-                  key={`${slot.door}-${slot.team?.id ?? slot.label}`}
+                  key={i}
                   className={`flex items-center justify-between gap-4 border-t-2 border-soft px-2 py-[7px] ${hit(slot.team) ? "bg-ink text-paper" : ""}`}
                 >
                   <span className={`text-sm ${hit(slot.team) ? "text-faint" : "text-mute"}`}>
@@ -225,9 +225,11 @@ export function SeasonMapView({ map }: { map: SeasonMap }) {
           )}
         </div>
 
-        <p className="display mt-16 border-t-[6px] border-ink pt-4 text-[32px] wide:text-[44px]">
-          En 2027 se terminan las zonas: los 30 equipos juegan un solo torneo de todos contra todos.
-        </p>
+        {map.note && (
+          <p className="display mt-16 border-t-[6px] border-ink pt-4 text-[32px] wide:text-[44px]">
+            {map.note}
+          </p>
+        )}
       </main>
     </div>
   );
