@@ -1,3 +1,5 @@
+INFORME HISTÓRICO: primera propuesta, anterior a la revisión de contenido y guía visual. No valida la versión actual. Ver landing-design.md.
+
 GATE: OPEN 18 (rounds used up)
 
 gate: checking http://localhost:3001/acerca (software); this takes a few minutes on a CPU Chrome

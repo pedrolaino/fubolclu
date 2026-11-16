@@ -9,7 +9,7 @@ import "@fontsource/barlow-condensed/800-italic.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: { default: "FubolClu", template: "%s | FubolClu" },
+  title: { default: "FubolClú", template: "%s | FubolClú" },
   description: "Tablas, fixture y goleadores del fútbol argentino",
 };
 

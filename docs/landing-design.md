@@ -1,44 +1,33 @@
-# Landing de FubolClu
+# FubolClú: introducción y guía
 
-`GATE: OPEN 18 (rounds used up)`. El resultado completo y todas las observaciones están en [landing-audit.txt](landing-audit.txt). No es un pase total del auditor visual.
+La página está en `/acerca`. `/` sigue abriendo los partidos y las tablas. El footer incluye un enlace a la introducción.
 
-[Vista de escritorio](landing-desktop.webp) · [Vista de celular](landing-mobile.webp).
+[Escritorio](landing-desktop.webp) · [Celular](landing-mobile.webp)
 
-La propuesta está en `/acerca`, en la rama `feat/landing-acerca`. La portada `/`, las pantallas de los torneos y el acceso a los datos conservan su implementación.
+## Contenido
 
-## Decisiones de diseño
+La apertura tiene un título, una captura del sitio y el enlace para entrar. La guía permite cambiar entre tablas, equipos y definiciones, con un enlace a la pantalla que muestra cada captura. Al final están los accesos a los torneos.
 
-- Negro y blanco, Barlow para texto y Barlow Condensed 800 italic para títulos, como pidió el brief y usa el sitio.
-- Una captura real de la portada, tomada el 16 de noviembre de 2026, convertida a WebP (112 KiB). Es una imagen editorial, no una tabla en vivo. Se puede reemplazar cuando se complete la carga de datos, sin cambiar el diseño.
-- Cuatro bloques: presentación, tablas calculadas, presupuesto de requests y enlaces a las cuatro secciones existentes.
-- Entrada breve del título, respuesta al puntero de los enlaces y el momento `liquid-type` de Taste Skill en “Elegí tu torneo”, con intensidad baja. En celular y con movimiento reducido queda estático. El contenido también se puede leer sin JavaScript.
-- Textos en español argentino, centrados en el producto. Los datos técnicos salen del README y del código: 100 requests permitidos, tope de sincronización de 90, persistencia en Postgres y tablas calculadas desde los resultados. No se inventaron posiciones, equipos, estadísticas ni testimonios.
+Se quitaron la sección de la API, las explicaciones de arquitectura, los eslóganes y el segundo logo del cierre. El nombre visible es FubolClú. El repositorio, el paquete, los slugs y los dominios conservan su nombre.
 
-## Taste Skill
+## Revisión de textos
 
-Se instaló con el comando oficial:
+Se aplicó [Humanizer 4.0.0](https://github.com/blader/humanizer/blob/main/SKILL.md) al contenido de la introducción, la guía, los accesos y el footer, incluidos títulos de página, etiquetas accesibles y textos alternativos. Se revisaron esos cuatro bloques completos. La revisión no incluye los relatos deportivos que el sitio genera a partir de los resultados.
 
-```sh
-npx skills add https://github.com/Leonxlnx/taste-skill --skill design-taste-frontend --agent codex --yes
-```
+Se eliminaron los remates que repetían una idea, las frases sobre el proyecto y las explicaciones que podía mostrar la interfaz. Las etiquetas que quedan nombran una pantalla o una acción. No se añadieron promesas, estadísticas ni testimonios.
 
-Versión: 2.5.1; commit de origen: `f6b76575f949707b4e3c37cd86cb44b0b98643e8`.
+La tipografía y los colores conservan la dirección de Taste Skill de la primera propuesta. La guía usa controles de pestañas en lugar del efecto decorativo sobre el título. El informe del auditor de la primera propuesta corresponde a una versión anterior; no se presenta como validación de este diseño.
 
-Se usaron sus guías de copy, jerarquía, composición, movimiento, accesibilidad y revisión en navegador. Los cuatro archivos de `public/landing/taste/moments` son copias sin modificar, con la licencia MIT en `public/landing/taste/LICENSE`.
+## Capturas
 
-El brief y la integración existente prevalecen sobre algunas reglas de la skill: se conservan las tipografías, los colores y el footer compartido; el proyecto sigue siendo una aplicación Next.js con base de datos, sin convertirlo en un export estático. El sorteo propuso un collage triptych, Mona Sans, chalk-tomato y liquid-type. Se retuvo liquid-type y se adaptó el hero a la captura grande solicitada. No se agregaron shaders ni una nueva hoja de estilos global para el sitio: todos los selectores propios están prefijados con `fc-`.
+La portada es una captura del sitio público tomada el 16 de noviembre de 2026. Las imágenes de la guía se obtuvieron renderizando la aplicación con los registros de 2026 que el repositorio conserva en `src/lib/provider/fixtures`, cargados únicamente en una base local descartable. No representan un marcador en vivo. Hay una captura para escritorio y otra para celular en cada vista. La versión de celular muestra el contenido a su tamaño de lectura, en lugar de reducir toda la pantalla de escritorio.
 
-El auditor de Taste Skill exige su propio shell `.wrap`, una única línea de columnas en toda la página y un footer de una pantalla completa. Esas observaciones se registran como diferencias con su plantilla, no como verificaciones aprobadas. También interpreta “TODO” dentro de “Cómo se define todo” como un placeholder: es el nombre real de la sección, indicado por el usuario. La otra excepción es la entrada CSS propia, en lugar de la marca global `html.m-enter` de la skill.
+No se usaron secrets de producción ni se consultó la API de fútbol para obtener las imágenes. Los resultados que ve una persona al abrir las secciones siguen saliendo de la base del sitio.
 
-## Verificación
+## Verificación de esta revisión
 
 - 172 tests existentes aprobados.
-- TypeScript, formato y lint del código de la aplicación aprobados.
-- Compilación de producción aprobada con Postgres local y el esquema de las migraciones.
-- Navegador: escritorio, tablet y celular, desde 320 hasta 1440 px. Sin desborde horizontal; apertura completa a 390 × 844.
-- Prueba de navegación de producción aprobada: cuatro destinos, anclas, teclado, retorno a la ruta, movimiento reducido, contenido sin JavaScript y cero errores de navegador. No se detectaron requests al proveedor de fútbol.
-- Auditor de rendimiento de la skill: 0 FAIL y 5 WARN en una corrida local (no es una medición de campo). Advierte 644 KiB de JavaScript parseado, cinco archivos de fuentes y un CLS de 0,103 en la carga de escritorio. Las fuentes y el layout raíz se conservan del proyecto.
-- ESLint completo: 0 errores y 2 advertencias de exportación anónima en las copias sin modificar del kit.
-- La prueba local usa una base descartable sin datos de producción. No se cargaron secrets, no se ejecutó la sincronización y no se hicieron consultas a Highlightly.
-
-No hacen falta fotografías ni materiales adicionales del cliente. La captura de la portada puede actualizarse después de la siguiente sincronización.
+- ESLint, TypeScript, Prettier y compilación de producción aprobados.
+- Guía probada en producción a 320, 390, 768, 1024 y 1440 px, sin desborde horizontal ni imágenes rotas.
+- Cambio de pestañas con clic y flechas de teclado; enlaces hacia las secciones y regreso desde Acerca; contenido inicial disponible sin JavaScript.
+- Sin errores de navegador. El build y las capturas usan una base local descartable.
