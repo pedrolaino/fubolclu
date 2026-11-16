@@ -5,6 +5,25 @@ import { matchEvents, matches, providerStandings, teams } from "@/db/schema";
 import { currentSeason } from "@/config/seasons";
 import { buildTeam } from "@/lib/team";
 
+// A match as lib/team reads it, without the stats.
+export const teamMatchColumns = {
+  id: matches.id,
+  competition: matches.competition,
+  roundLabel: matches.roundLabel,
+  phase: matches.phase,
+  tournament: matches.tournament,
+  matchday: matches.matchday,
+  kickoff: matches.kickoff,
+  status: matches.status,
+  homeTeamId: matches.homeTeamId,
+  awayTeamId: matches.awayTeamId,
+  homeGoals: matches.homeGoals,
+  awayGoals: matches.awayGoals,
+  homePenalties: matches.homePenalties,
+  awayPenalties: matches.awayPenalties,
+  detailsSyncedAt: matches.detailsSyncedAt,
+};
+
 export async function teamSlugs() {
   return db.select({ slug: teams.slug }).from(teams);
 }
@@ -18,26 +37,7 @@ export async function loadTeam(slug: string) {
   const season = currentSeason.season;
   const [teamRows, matchRows, groups, goals] = await Promise.all([
     db.select().from(teams),
-    db
-      .select({
-        id: matches.id,
-        competition: matches.competition,
-        roundLabel: matches.roundLabel,
-        phase: matches.phase,
-        tournament: matches.tournament,
-        matchday: matches.matchday,
-        kickoff: matches.kickoff,
-        status: matches.status,
-        homeTeamId: matches.homeTeamId,
-        awayTeamId: matches.awayTeamId,
-        homeGoals: matches.homeGoals,
-        awayGoals: matches.awayGoals,
-        homePenalties: matches.homePenalties,
-        awayPenalties: matches.awayPenalties,
-        detailsSyncedAt: matches.detailsSyncedAt,
-      })
-      .from(matches)
-      .where(eq(matches.season, season)),
+    db.select(teamMatchColumns).from(matches).where(eq(matches.season, season)),
     db
       .select({
         competition: providerStandings.competition,

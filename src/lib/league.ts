@@ -113,6 +113,16 @@ type RoundInfo = Pick<LeagueMatch, "roundLabel" | "phase" | "matchday">;
 
 const knockout = (m: RoundInfo) => knockoutNames.find(([label]) => label.test(m.roundLabel));
 
+// How deep into a knockout a match is: 5 for a final, -1 for anything that isn't a known stage.
+export const stageDepth = (m: RoundInfo) =>
+  m.phase === "knockout" ? knockoutNames.findIndex(([label]) => label.test(m.roundLabel)) : -1;
+
+// "la final" after the semi-finals; null after a final or an unknown stage.
+export const nextStagePhrase = (m: RoundInfo) => {
+  const depth = stageDepth(m);
+  return depth < 0 ? null : (knockoutNames[depth + 1]?.[2] ?? null);
+};
+
 export function roundName(m: RoundInfo) {
   if (m.phase === "league" && m.matchday !== null) return `Fecha ${m.matchday}`;
   return knockout(m)?.[1] ?? m.roundLabel;
