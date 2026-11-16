@@ -83,7 +83,11 @@ export function table(matches: StandingsMatch[], teams: TeamName[]): Row[] {
 }
 
 // Interzonal matches count too: each team's row only takes its own results.
-export function zoneTable(matches: StandingsMatch[], tournament: Tournament, zone: TeamName[]) {
+export function zoneTable(
+  matches: StandingsMatch[],
+  tournament: Tournament | null,
+  zone: TeamName[],
+) {
   return table(
     matches.filter((m) => m.phase === "league" && m.tournament === tournament),
     zone,

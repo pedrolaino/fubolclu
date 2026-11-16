@@ -14,6 +14,9 @@ export const season2026: SeasonConfig = {
         { label: /^Clausura - (\d+)$/, phase: "league", tournament: "clausura" },
         { label: /./, phase: "knockout", tournament: "clausura" },
       ],
+      playoffSpots: 8,
+      annual: { libertadores: 3, relegated: 1 },
+      averages: { relegated: 1 },
     },
     {
       competition: "primera-nacional",
