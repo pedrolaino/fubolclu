@@ -1,8 +1,24 @@
 import type { CompetitionSeason } from "@/config/seasons/types";
-import type { Competition, Tournament } from "@/db/schema";
+import type { Competition } from "@/db/schema";
 import { dayLabel, timeLabel } from "@/lib/dates";
-import { roundName, roundPhrase, type LeagueMatch, type Result, type TeamView } from "@/lib/league";
+import {
+  roundName,
+  roundPhrase,
+  stageDepth,
+  type LeagueMatch,
+  type Result,
+  type TeamView,
+} from "@/lib/league";
 import { paint } from "@/lib/paint";
+import {
+  contestName,
+  ofContest,
+  tableState,
+  tieWinner,
+  unplayed,
+  isUpcoming,
+  withArticle,
+} from "@/lib/results";
 import { positionHistory, scorers, zoneTable, type Row, type ScorerEvent } from "@/lib/standings";
 
 export interface TeamMatch extends LeagueMatch {
@@ -48,22 +64,15 @@ export interface Standing {
 
 export const toTeamView = (t: TeamData["teams"][number]): TeamView => ({ ...t, ...paint(t.id) });
 
-const tournamentName: Record<Tournament, string> = { apertura: "Apertura", clausura: "Clausura" };
-const competitionNames: Record<Competition, string> = {
-  "liga-profesional": "Liga Profesional",
-  "primera-nacional": "Primera Nacional",
-  "copa-argentina": "Copa Argentina",
-};
+const contestOf = (m: Pick<TeamMatch, "competition" | "tournament">) =>
+  m.tournament ?? m.competition;
 
 // "Clausura", "Primera Nacional"
-export function competitionName(m: Pick<TeamMatch, "competition" | "tournament">) {
-  return m.tournament ? tournamentName[m.tournament] : competitionNames[m.competition];
-}
+export const competitionName = (m: Pick<TeamMatch, "competition" | "tournament">) =>
+  contestName(contestOf(m));
 
 // "la fecha 16 del Clausura", "los octavos de final de la Copa Argentina"
-export function roundOf(m: TeamMatch) {
-  return `${roundPhrase(m)} ${m.tournament ? "del" : "de la"} ${competitionName(m)}`;
-}
+export const roundOf = (m: TeamMatch) => `${roundPhrase(m)} ${ofContest(contestOf(m))}`;
 
 const shortDay = new Intl.DateTimeFormat("es-AR", {
   weekday: "short",
@@ -75,7 +84,6 @@ const shortDay = new Intl.DateTimeFormat("es-AR", {
 // "dom 22 nov"
 const dateLabel = (date: Date) => shortDay.format(date).replace(/[,.]/g, "");
 
-const pending = (m: LeagueMatch) => m.status === "scheduled" || m.status === "live";
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 const involves = (m: LeagueMatch, id: number) => m.homeTeamId === id || m.awayTeamId === id;
 
@@ -85,7 +93,7 @@ function standing(
   competitions: CompetitionSeason[],
   now: Date,
   teamName: (id: number) => string,
-): (Standing & { over: boolean }) | null {
+): (Standing & { state: ReturnType<typeof tableState> }) | null {
   for (const config of competitions) {
     const own = data.groups.filter((g) => g.competition === config.competition);
     if (!config.standings || !own.some((g) => g.teamId === teamId)) continue;
@@ -95,7 +103,7 @@ function standing(
     // Same rule as the league page: the tournament of the latest league match that has kicked off.
     const tournament =
       league.findLast((m) => m.kickoff <= now)?.tournament ?? league[0]?.tournament ?? null;
-    const prefix = tournament ? `${tournamentName[tournament]} - ` : "";
+    const prefix = tournament ? `${contestName(tournament)} - ` : "";
     const names = [...new Set(own.map((g) => g.groupName))]
       .filter((name) => !tournament || name.startsWith(prefix))
       .sort();
@@ -109,16 +117,19 @@ function standing(
     const index = rows.findIndex((r) => r.teamId === teamId);
     const letter = String.fromCharCode(65 + names.indexOf(mine.groupName));
     const top = config.zoneLines?.find((l) => "top" in l);
+    // Same rule as the league page: the zone is over when no match of any of its teams is left.
+    const ids = new Set(members.map((t) => t.id));
+    const zoneMatches = matches.filter((m) => ids.has(m.homeTeamId) || ids.has(m.awayTeamId));
     const spots = top && "top" in top ? top.top : undefined;
     return {
-      zone: `la Zona ${letter}${tournament ? ` del ${tournamentName[tournament]}` : ""}`,
+      zone: `la Zona ${letter}${tournament ? ` ${ofContest(tournament)}` : ""}`,
       position: index + 1,
       size: rows.length,
       spots: spots && spots < rows.length ? spots : null,
       lineNote: top?.note ?? null,
       history: positionHistory(matches, members, teamId),
       record: rows[index],
-      over: !matches.some((m) => pending(m) && involves(m, teamId)),
+      state: tableState(rows, zoneMatches),
     };
   }
   return null;
@@ -163,20 +174,33 @@ export function buildTeam(
 
   const table = standing(teamId, data, competitions, now, (id) => teams.get(id)!.name);
 
-  const next = mine.find(pending);
+  const next = mine.find((m) => isUpcoming(m, now));
   const last = mine.findLast((m) => m.status === "finished" && m.homeGoals !== null);
   let sentence = "";
   if (table) {
     const points = plural(table.record.points, "punto", "puntos");
-    sentence = table.over
-      ? table.position === 1
-        ? `Ganó ${table.zone} con ${points}.`
-        : `Terminó ${table.position}º en ${table.zone} con ${points}.`
-      : table.position === 1
-        ? `Lidera ${table.zone} con ${points}.`
-        : `Es ${table.position}º en ${table.zone} con ${points}.`;
+    sentence =
+      table.state === "unstarted"
+        ? `Todavía no se jugó ningún partido de ${table.zone}.`
+        : table.state === "over"
+          ? table.position === 1
+            ? `Ganó ${table.zone} con ${points}.`
+            : `Terminó ${table.position}º en ${table.zone} con ${points}.`
+          : table.position === 1
+            ? `Lidera ${table.zone} con ${points}.`
+            : `Es ${table.position}º en ${table.zone} con ${points}.`;
   } else if (mine.length) {
-    sentence = `Juega la ${competitionName(mine[0])}.`;
+    // The competition it is playing now, or the last one it played.
+    const contest = contestOf(mine.find(unplayed) ?? mine.at(-1)!);
+    const own = mine.filter((m) => contestOf(m) === contest);
+    // Through a knockout round whose next tie isn't drawn yet still counts as playing it.
+    const lastTie = own.findLast((m) => m.phase === "knockout" && tieWinner(m));
+    const through =
+      lastTie !== undefined &&
+      stageDepth(lastTie) !== 5 &&
+      tieWinner(lastTie) === (lastTie.homeTeamId === teamId ? "home" : "away") &&
+      lastTie === own.findLast((m) => m.status === "finished");
+    sentence = `${own.some(unplayed) || through ? "Juega" : "Jugó"} ${withArticle(contest)}.`;
   }
   if (next) {
     const home = next.homeTeamId === teamId;

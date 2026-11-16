@@ -1,7 +1,8 @@
 import type { CompetitionSeason } from "@/config/seasons/types";
-import type { MatchStatus, Tournament } from "@/db/schema";
+import type { MatchStatus } from "@/db/schema";
 import { dayLabel, rangeLabel } from "@/lib/dates";
 import { paint } from "@/lib/paint";
+import { contestName, isUpcoming, ofContest, tableState } from "@/lib/results";
 import {
   annualTable,
   averagesTable,
@@ -99,8 +100,6 @@ export interface Round {
   matches: MatchView[];
 }
 
-const tournamentName: Record<Tournament, string> = { apertura: "Apertura", clausura: "Clausura" };
-
 const knockoutNames: [RegExp, string, string][] = [
   [/Round of 64/, "32avos de final", "los 32avos de final"],
   [/Round of 32/, "16avos de final", "los 16avos de final"],
@@ -134,7 +133,6 @@ export function roundPhrase(m: RoundInfo) {
   return knockout(m)?.[2] ?? m.roundLabel;
 }
 
-const pending = (m: LeagueMatch) => m.status === "scheduled" || m.status === "live";
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 
 export function buildLeague(data: LeagueData, config: CompetitionSeason, now: Date) {
@@ -149,7 +147,7 @@ export function buildLeague(data: LeagueData, config: CompetitionSeason, now: Da
 
   const nextMatch = (teamId: number) => {
     const m = byKickoff.find(
-      (m) => pending(m) && (m.homeTeamId === teamId || m.awayTeamId === teamId),
+      (m) => isUpcoming(m, now) && (m.homeTeamId === teamId || m.awayTeamId === teamId),
     );
     if (!m) return "";
     const home = m.homeTeamId === teamId;
@@ -166,7 +164,7 @@ export function buildLeague(data: LeagueData, config: CompetitionSeason, now: Da
 
   const tabs: Tab[] = [];
 
-  const prefix = tournament ? `${tournamentName[tournament]} - ` : "";
+  const prefix = tournament ? `${contestName(tournament)} - ` : "";
   const zoneNames = [...new Set(data.groups.map((g) => g.groupName))]
     .filter((name) => (tournament ? name.startsWith(prefix) : true))
     .sort();
@@ -176,11 +174,12 @@ export function buildLeague(data: LeagueData, config: CompetitionSeason, now: Da
     const rows = zoneTable(matches, tournament, members);
     if (!rows.length) return;
     const letter = String.fromCharCode(65 + i);
-    const zone = `la Zona ${letter}${tournament ? ` del ${tournamentName[tournament]}` : ""}`;
+    const zone = `la Zona ${letter}${tournament ? ` ${ofContest(tournament)}` : ""}`;
     const [first, second] = rows;
     const ids = new Set(members.map((t) => t.id));
-    const over = !matches.some(
-      (m) => pending(m) && (ids.has(m.homeTeamId) || ids.has(m.awayTeamId)),
+    const state = tableState(
+      rows,
+      matches.filter((m) => ids.has(m.homeTeamId) || ids.has(m.awayTeamId)),
     );
     const gap = second ? first.points - second.points : 0;
     const margin = !second
@@ -199,10 +198,12 @@ export function buildLeague(data: LeagueData, config: CompetitionSeason, now: Da
       subject: team(first.teamId),
       title: team(first.teamId).name,
       summary:
-        (over
-          ? `Ganó ${zone} con ${plural(first.points, "punto", "puntos")}.`
-          : `Lidera ${zone} con ${plural(first.points, "punto", "puntos")}${margin}.`) +
-        nextMatch(first.teamId),
+        state === "unstarted"
+          ? `Todavía no se jugó ningún partido de ${zone}.`
+          : (state === "over"
+              ? `Ganó ${zone} con ${plural(first.points, "punto", "puntos")}.`
+              : `Lidera ${zone} con ${plural(first.points, "punto", "puntos")}${margin}.`) +
+            nextMatch(first.teamId),
       rows: toRows(rows, matches),
       lines: zoneLines.map((l) => l.at).filter((n) => n > 0 && n < rows.length),
       notes: zoneLines.map((l) => l.note),
@@ -211,11 +212,11 @@ export function buildLeague(data: LeagueData, config: CompetitionSeason, now: Da
 
   const everyone = [...new Set(data.groups.map((g) => g.teamId))].map(team);
   const annual = annualTable(league, everyone);
+  const annualState = tableState(annual, league);
 
   if (config.annual && annual.length) {
     const { libertadores, relegated } = config.annual;
     const first = annual[0];
-    const over = !league.some(pending);
     const points = plural(first.points, "punto", "puntos");
     tabs.push({
       kind: "table",
@@ -223,9 +224,12 @@ export function buildLeague(data: LeagueData, config: CompetitionSeason, now: Da
       label: "Anual",
       subject: team(first.teamId),
       title: team(first.teamId).name,
-      summary: over
-        ? `Terminó primero en la tabla anual con ${points} y es Campeón de Liga.`
-        : `Lidera la tabla anual con ${points} en ${plural(first.played, "partido", "partidos")}. Quien termine primero es Campeón de Liga.`,
+      summary:
+        annualState === "unstarted"
+          ? "Todavía no se jugó ningún partido de la tabla anual."
+          : annualState === "over"
+            ? `Terminó primero en la tabla anual con ${points} y es Campeón de Liga.`
+            : `Lidera la tabla anual con ${points} en ${plural(first.played, "partido", "partidos")}. Quien termine primero es Campeón de Liga.`,
       rows: toRows(annual, league),
       lines: [libertadores, annual.length - relegated].filter((n) => n > 0 && n < annual.length),
       notes: [
@@ -241,19 +245,29 @@ export function buildLeague(data: LeagueData, config: CompetitionSeason, now: Da
       ...annual.map(({ teamId, played, points }) => ({ teamId, played, points })),
     ];
     const rows = averagesTable(seasons, everyone);
-    const last = rows.at(-1)!;
+    // Teams without games have no average; they come last and can't be the worst.
+    const ranked = rows.filter((r) => r.played > 0);
+    const last = ranked.at(-1) ?? rows[0];
+    const average = last.average.toFixed(3).replace(".", ",");
     tabs.push({
       kind: "averages",
       key: "promedios",
       label: "Promedios",
       subject: team(last.teamId),
       title: team(last.teamId).name,
-      summary: `Tiene el peor promedio de la categoría: ${last.average.toFixed(3).replace(".", ",")}. Si termina así, desciende.`,
+      summary: !ranked.length
+        ? "Todavía no se jugó ningún partido que cuente para los promedios."
+        : annualState === "over"
+          ? `Terminó con el peor promedio de la categoría: ${average}. Desciende a la Primera Nacional.`
+          : `Tiene el peor promedio de la categoría: ${average}. Si termina así, desciende.`,
       rows: rows.map(({ teamId, ...row }) => ({ ...row, team: team(teamId) })),
-      lines: [rows.length - config.averages.relegated],
+      lines: [ranked.length - config.averages.relegated].filter((n) => n > 0),
       notes: [
         "Debajo de la línea, el que desciende por promedio.",
         "Puntos de las últimas tres temporadas en Primera divididos por los partidos jugados.",
+        ...(ranked.length < rows.length
+          ? ["Los que todavía no jugaron en Primera no tienen promedio y van al final."]
+          : []),
       ],
     });
   }
@@ -309,6 +323,6 @@ export function buildLeague(data: LeagueData, config: CompetitionSeason, now: Da
   return {
     tabs,
     latest: round(byKickoff.findLast((m) => m.status === "finished")),
-    next: round(byKickoff.find(pending)),
+    next: round(byKickoff.find((m) => isUpcoming(m, now))),
   };
 }

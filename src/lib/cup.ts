@@ -1,13 +1,16 @@
 import { dayLabel, rangeLabel } from "@/lib/dates";
 import {
+  nextStagePhrase,
   roundName,
   roundPhrase,
+  stageDepth,
   type LeagueData,
   type LeagueMatch,
   type MatchView,
   type TeamView,
 } from "@/lib/league";
 import { paint } from "@/lib/paint";
+import { isUpcoming, tieWinner } from "@/lib/results";
 
 export type CupMatch = Pick<
   LeagueMatch,
@@ -39,33 +42,21 @@ export interface BracketRound {
   ties: Tie[];
 }
 
-// The provider's labels, in the order they are played.
-const stages = [
-  "Round of 64",
-  "Round of 32",
-  "Round of 16",
-  "Quarter-finals",
-  "Semi-finals",
-  "Final",
-];
-
 const info = (roundLabel: string) => ({ roundLabel, phase: "knockout" as const, matchday: null });
 
-function winnerOf(m: CupMatch) {
-  if (m.status !== "finished" || m.homeGoals === null || m.awayGoals === null) return null;
-  if (m.homeGoals !== m.awayGoals) return m.homeGoals > m.awayGoals ? "home" : "away";
-  if (m.homePenalties === null || m.awayPenalties === null) return null;
-  return m.homePenalties > m.awayPenalties ? "home" : "away";
-}
+// "están postergados" for "los cuartos de final", "está postergada" for "la final"
+const postponed = (phrase: string) =>
+  ({ la: "está postergada", las: "están postergadas" })[phrase.split(" ")[0]] ??
+  "están postergados";
 
 // Rounds as the bracket draws them: earliest first, the ties of each by kickoff.
 // TODO: the data doesn't say which tie feeds which, so there are no connector lines.
-export function buildCup(data: CupData) {
+export function buildCup(data: CupData, now: Date) {
   const teams = new Map(data.teams.map((t) => [t.id, { ...t, ...paint(t.id) }]));
   const team = (id: number): TeamView => teams.get(id)!;
   const byKickoff = [...data.matches].sort((a, b) => a.kickoff.getTime() - b.kickoff.getTime());
 
-  const last = byKickoff.findLast((m) => winnerOf(m));
+  const last = byKickoff.findLast((m) => tieWinner(m));
   if (!last) return null;
 
   const view = (m: CupMatch): Tie => ({
@@ -78,7 +69,7 @@ export function buildCup(data: CupData) {
     awayGoals: m.awayGoals,
     homePenalties: m.homePenalties,
     awayPenalties: m.awayPenalties,
-    winner: winnerOf(m),
+    winner: tieWinner(m),
   });
 
   const rounds: BracketRound[] = [];
@@ -106,21 +97,28 @@ export function buildCup(data: CupData) {
       ? `Empató ${goalsFor}-${goalsAgainst} con ${loser.name} en ${phrase} y ganó ${pensFor}-${pensAgainst} por penales.`
       : `Le ganó a ${loser.name} ${goalsFor}-${goalsAgainst} en ${phrase}.`;
 
-  const nextLabel = stages[stages.indexOf(last.roundLabel) + 1];
+  const depth = stageDepth(info(last.roundLabel));
+  const nextPhrase = nextStagePhrase(info(last.roundLabel));
   const nextTie = byKickoff.find(
     (m) =>
-      m.status === "scheduled" &&
-      m.roundLabel === nextLabel &&
+      stageDepth(info(m.roundLabel)) === depth + 1 &&
+      m.status !== "finished" &&
+      m.status !== "cancelled" &&
       (m.homeTeamId === winner.id || m.awayTeamId === winner.id),
   );
-  let next: string;
-  if (last.roundLabel === "Final") next = "Es el campeón de la Copa Argentina.";
-  else if (nextTie) {
-    const rival = team(nextTie.homeTeamId === winner.id ? nextTie.awayTeamId : nextTie.homeTeamId);
-    next = `El ${dayLabel(nextTie.kickoff)} enfrenta a ${rival.name} por ${roundPhrase(info(nextLabel))}.`;
-  } else if (nextLabel) {
-    next = `Ya está en ${roundPhrase(info(nextLabel))}; todavía no tiene fecha.`;
-  } else next = "";
+  const rival =
+    nextTie && team(nextTie.homeTeamId === winner.id ? nextTie.awayTeamId : nextTie.homeTeamId);
+  let next = "";
+  if (depth === 5) next = "Es el campeón de la Copa Argentina.";
+  else if (!nextPhrase) next = "";
+  else if (!nextTie || !rival) next = `Ya está en ${nextPhrase}; todavía no tiene fecha.`;
+  else if (nextTie.status === "postponed") {
+    next = `${nextPhrase[0].toUpperCase()}${nextPhrase.slice(1)} contra ${rival.name} ${postponed(nextPhrase)}.`;
+  } else if (!isUpcoming(nextTie, now)) next = `Ya está en ${nextPhrase}, contra ${rival.name}.`;
+  else if (nextTie.status === "live") next = `Está jugando ${nextPhrase} contra ${rival.name}.`;
+  else {
+    next = `El ${dayLabel(nextTie.kickoff)} enfrenta a ${rival.name} por ${nextPhrase}.`;
+  }
 
   return {
     rounds,

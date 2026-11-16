@@ -155,6 +155,15 @@ describe("averagesTable", () => {
       { teamId: 2, played: 32, points: 30, average: 30 / 32 },
     ]);
   });
+
+  it("lists teams without games after those with an average", () => {
+    const rows = averagesTable([{ teamId: 2, played: 32, points: 0 }], teams.slice(0, 3));
+    expect(rows.map((r) => [r.teamId, r.played])).toEqual([
+      [2, 32],
+      [1, 0],
+      [3, 0],
+    ]);
+  });
 });
 
 describe("scorers", () => {

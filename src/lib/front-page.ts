@@ -7,6 +7,7 @@ import {
   type MatchView,
   type TeamView,
 } from "@/lib/league";
+import { contestName, tieWinner } from "@/lib/results";
 import { competitionName, roundOf, toTeamView, type TeamData, type TeamMatch } from "@/lib/team";
 
 export interface FrontData {
@@ -39,20 +40,7 @@ export interface Side {
 
 const DAY = 24 * 60 * 60 * 1000;
 const competitions: Competition[] = ["liga-profesional", "primera-nacional", "copa-argentina"];
-const competitionTitle: Record<Competition, string> = {
-  "liga-profesional": "Liga Profesional",
-  "primera-nacional": "Primera Nacional",
-  "copa-argentina": "Copa Argentina",
-};
 const shown = 10;
-
-function winnerSide(m: TeamMatch) {
-  if (m.status !== "finished" || m.homeGoals === null || m.awayGoals === null) return null;
-  if (m.homeGoals !== m.awayGoals) return m.homeGoals > m.awayGoals ? "home" : "away";
-  const { homePenalties: h, awayPenalties: a } = m;
-  if (h === null || a === null || h === a) return null;
-  return h > a ? "home" : "away";
-}
 
 // What winning the match settles, as far as the formats say.
 function consequence(m: TeamMatch) {
@@ -77,7 +65,7 @@ function pickLead(data: FrontData, team: (id: number) => TeamView, now: Date): L
         m.phase === "knockout" &&
         m.kickoff <= now &&
         now.getTime() - m.kickoff.getTime() <= 7 * DAY &&
-        winnerSide(m),
+        tieWinner(m),
     )
     .sort(
       (a, b) =>
@@ -87,7 +75,7 @@ function pickLead(data: FrontData, team: (id: number) => TeamView, now: Date): L
     );
   if (!m) return null;
 
-  const home = winnerSide(m) === "home";
+  const home = tieWinner(m) === "home";
   const winner = team(home ? m.homeTeamId : m.awayTeamId);
   const loser = team(home ? m.awayTeamId : m.homeTeamId);
   const [gf, ga] = home ? [m.homeGoals!, m.awayGoals!] : [m.awayGoals!, m.homeGoals!];
@@ -113,16 +101,18 @@ function side(matches: TeamMatch[], team: (id: number) => TeamView): Side {
     const label = `${competitionName(m)}, ${roundName(m).toLowerCase()}`;
     let group = groups.find((g) => g.label === label);
     if (!group) groups.push((group = { label, matches: [] }));
+    // A match the data still has as scheduled has no score yet, whatever the row holds.
+    const scored = m.status !== "scheduled";
     group.matches.push({
       id: m.id,
       kickoff: m.kickoff,
       status: m.status,
       home: team(m.homeTeamId),
       away: team(m.awayTeamId),
-      homeGoals: m.homeGoals,
-      awayGoals: m.awayGoals,
-      homePenalties: m.homePenalties,
-      awayPenalties: m.awayPenalties,
+      homeGoals: scored ? m.homeGoals : null,
+      awayGoals: scored ? m.awayGoals : null,
+      homePenalties: scored ? m.homePenalties : null,
+      awayPenalties: scored ? m.awayPenalties : null,
       time: timeLabel(m.kickoff),
     });
   }
@@ -130,7 +120,7 @@ function side(matches: TeamMatch[], team: (id: number) => TeamView): Side {
   const more = competitions
     .map((c) => ({
       href: `/${c}`,
-      name: competitionTitle[c],
+      name: contestName(c),
       count: rest.filter((m) => m.competition === c).length,
     }))
     .filter((c) => c.count > 0);
@@ -144,13 +134,11 @@ export function buildFrontPage(data: FrontData, now: Date) {
   const byKickoff = data.matches.toSorted((a, b) => a.kickoff.getTime() - b.kickoff.getTime());
 
   const upcoming = byKickoff.filter(
-    (m) => m.status === "scheduled" && m.kickoff >= now && m.kickoff.getTime() - t <= 7 * DAY,
+    (m) => m.status === "scheduled" && m.kickoff > now && m.kickoff.getTime() - t <= 7 * DAY,
   );
-  // Anything that should have started: results, plus live and postponed matches.
+  // Anything that should have started, including matches the last sync still had as scheduled.
   const results = byKickoff
-    .filter(
-      (m) => m.status !== "scheduled" && m.kickoff <= now && t - m.kickoff.getTime() <= 4 * DAY,
-    )
+    .filter((m) => m.kickoff <= now && t - m.kickoff.getTime() <= 4 * DAY)
     .reverse();
   // Latest day first, but each day's matches in the order they were played.
   const recent = side(results, team);

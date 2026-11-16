@@ -152,10 +152,39 @@ describe("buildLeague", () => {
     expect(tab.subject.name).toBe("Instituto");
     expect(tab.kind === "averages" && tab.rows.at(-1)).toMatchObject({ played: 34, points: 36 });
     expect(tab.summary).toBe(
+      "Terminó con el peor promedio de la categoría: 1,059. Desciende a la Primera Nacional.",
+    );
+    const open = buildLeague(
+      data([...played, match(407562, 370969, null, 12)], { history }),
+      config,
+      now,
+    ).tabs[3];
+    expect(open.summary).toBe(
       "Tiene el peor promedio de la categoría: 1,059. Si termina así, desciende.",
     );
   });
 
+  it("keeps a zone open while a match of its teams is postponed", () => {
+    const postponed = { ...match(370969, 371820, null, 9), status: "postponed" as const };
+    const { tabs } = buildLeague(data([...played, postponed]), config, now);
+    expect(tabs[1].summary).toBe(
+      "Lidera la Zona B del Clausura con 1 punto, igualado con River Plate.",
+    );
+    expect(tabs[2].summary).toMatch(/^Lidera la tabla anual/);
+  });
+
+  it("names as next match only one that is still ahead or under way", () => {
+    const stale = { ...match(407562, 370969, null, 9), status: "live" as const };
+    const postponed = { ...match(407562, 371820, null, 10), status: "postponed" as const };
+    const { tabs } = buildLeague(data([...played, stale, postponed]), config, now);
+    expect(tabs[0].summary).toBe(
+      "Lidera la Zona A del Clausura con 6 puntos, 3 más que Boca Juniors.",
+    );
+    const live = { ...match(407562, 370969, null, 10), status: "live" as const, kickoff: now };
+    expect(buildLeague(data([...played, live]), config, now).tabs[0].summary).toMatch(
+      /recibe a River Plate por la fecha 10\.$/,
+    );
+  });
   it("puts the top scorer's team in charge of the scorers tab", () => {
     const goals = [
       { playerId: 1, playerName: "Eduardo Salvio", teamId: 371820, type: "goal" as const },
@@ -175,5 +204,43 @@ describe("buildLeague", () => {
     expect(latest?.matches).toHaveLength(2);
     expect(next?.title).toBe("Fecha 12");
     expect(next?.matches[0].home.name).toBe("Instituto");
+  });
+});
+
+describe("buildLeague before anything is played", () => {
+  const history = [
+    { teamId: 407562, played: 32, points: 30 },
+    { teamId: 384585, played: 32, points: 62 },
+    { teamId: 370969, played: 32, points: 53 },
+  ];
+  const fixtures = [match(407562, 384585, null, 12), match(370969, 371820, null, 12)];
+
+  it("claims no leader or winner for a table where nobody has played", () => {
+    // With no matches at all there is no tournament to name.
+    for (const [matches, zone] of [
+      [fixtures, "la Zona A del Clausura"],
+      [[], "la Zona A"],
+    ] as const) {
+      const { tabs } = buildLeague(data([...matches], { history }), config, now);
+      expect(tabs[0].title).toBe("Boca Juniors");
+      expect(tabs[0].summary).toBe(`Todavía no se jugó ningún partido de ${zone}.`);
+      expect(tabs[2].summary).toBe("Todavía no se jugó ningún partido de la tabla anual.");
+    }
+  });
+
+  it("gives no average to a team without games and leaves it out of the worst", () => {
+    const tab = buildLeague(data(fixtures, { history }), config, now).tabs[3];
+    expect(tab.kind === "averages" && tab.rows.map((r) => r.team.name)).toEqual([
+      "Boca Juniors",
+      "River Plate",
+      "Instituto",
+      "Racing",
+    ]);
+    expect(tab.subject.name).toBe("Instituto");
+    expect(tab.summary).toBe(
+      "Tiene el peor promedio de la categoría: 0,938. Si termina así, desciende.",
+    );
+    const none = buildLeague(data(fixtures), config, now).tabs[3];
+    expect(none.summary).toBe("Todavía no se jugó ningún partido que cuente para los promedios.");
   });
 });

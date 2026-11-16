@@ -16,5 +16,5 @@ export async function loadCup() {
         and(eq(matches.competition, "copa-argentina"), eq(matches.season, currentSeason.season)),
       ),
   ]);
-  return buildCup({ teams: teamRows, matches: matchRows });
+  return buildCup({ teams: teamRows, matches: matchRows }, new Date());
 }

@@ -105,7 +105,7 @@ function AverageRows({ rows, lines }: { rows: AverageRow[]; lines: number[] }) {
       <td className={`${num} ${secondary}`}>{r.points}</td>
       <td className={`${num} ${secondary}`}>{r.played}</td>
       <td className={`${big} w-24 text-right ${i === rows.length - 1 ? "text-lead-ink" : ""}`}>
-        {r.average.toFixed(3).replace(".", ",")}
+        {r.played ? r.average.toFixed(3).replace(".", ",") : "–"}
       </td>
     </Row>
   ));

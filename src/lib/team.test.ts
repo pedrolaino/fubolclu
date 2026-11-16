@@ -120,7 +120,40 @@ describe("buildTeam", () => {
     expect(view.standing).toBeNull();
     expect(view.scorers).toBeNull();
     expect(view.summary).toBe(
-      "Juega la Copa Argentina. En su último partido perdió 2-0 con Instituto.",
+      "Jugó la Copa Argentina. En su último partido perdió 2-0 con Instituto.",
+    );
+    const through = build(105, data([cup(105, 100, [2, 0], 1)], { groups: [] }));
+    expect(through.summary).toBe(
+      "Juega la Copa Argentina. En su último partido ganó 2-0 a Instituto.",
+    );
+    const apertura = build(
+      105,
+      data([match(105, 100, null, 20, { tournament: "apertura" })], { groups: [] }),
+    );
+    expect(apertura.summary).toBe(
+      "Juega el Apertura. El jueves 20 de agosto recibe a Instituto por la fecha 20 del Apertura.",
+    );
+  });
+
+  it("says the zone is over only when no match of its teams is left", () => {
+    const played = [
+      match(100, 101, [2, 0], 1),
+      match(104, 100, [0, 1], 2),
+      match(101, 104, [1, 0], 3),
+    ];
+    const left = { ...match(101, 104, null, 9), status: "postponed" as const };
+    expect(build(100, data([...played, left])).summary).toBe(
+      "Lidera la Zona A del Clausura con 6 puntos. En su último partido ganó 1-0 a Lanús.",
+    );
+    expect(build(100, data(played)).summary).toBe(
+      "Ganó la Zona A del Clausura con 6 puntos. En su último partido ganó 1-0 a Lanús.",
+    );
+  });
+
+  it("names no next match from a stale live row and no leader before the first game", () => {
+    const stale = { ...match(100, 101, null, 9), status: "live" as const };
+    expect(build(100, data([stale, match(100, 104, null, 20)])).summary).toBe(
+      "Todavía no se jugó ningún partido de la Zona A del Clausura. El jueves 20 de agosto recibe a Lanús por la fecha 20 del Clausura.",
     );
   });
 

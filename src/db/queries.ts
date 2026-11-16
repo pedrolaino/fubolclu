@@ -1,4 +1,4 @@
-import { and, asc, eq, inArray, max } from "drizzle-orm";
+import { and, asc, between, eq, inArray, max } from "drizzle-orm";
 import { db } from "@/db";
 import {
   historicalPoints,
@@ -40,7 +40,9 @@ async function leagueData(competition: Competition, season: number): Promise<Lea
         played: historicalPoints.played,
         points: historicalPoints.points,
       })
-      .from(historicalPoints),
+      .from(historicalPoints)
+      // The averages take the two seasons before this one.
+      .where(between(historicalPoints.season, season - 2, season - 1)),
   ]);
   return { teams: teamRows, matches: matchRows, groups, goals, history };
 }

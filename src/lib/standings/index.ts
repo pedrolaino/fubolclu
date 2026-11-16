@@ -102,6 +102,7 @@ export function annualTable(matches: StandingsMatch[], teams: TeamName[]) {
 }
 
 // Seasons are whatever rows the caller passes: one per team and season of top-flight league play.
+// Teams without games have no real average (0 here) and come after the rest.
 export function averagesTable(
   seasons: { teamId: number; played: number; points: number }[],
   teams: TeamName[],
@@ -114,7 +115,10 @@ export function averagesTable(
     return { teamId: id, played, points, average: played ? points / played : 0 };
   });
   return rows.sort(
-    (a, b) => b.average - a.average || name.get(a.teamId)!.localeCompare(name.get(b.teamId)!, "es"),
+    (a, b) =>
+      Number(b.played > 0) - Number(a.played > 0) ||
+      b.average - a.average ||
+      name.get(a.teamId)!.localeCompare(name.get(b.teamId)!, "es"),
   );
 }
 

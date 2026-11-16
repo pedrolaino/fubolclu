@@ -103,6 +103,16 @@ describe("buildFrontPage lead", () => {
     );
   });
 
+  it("leaves out a shoot-out with level penalties", () => {
+    const { lead } = build([
+      knockout("liga-profesional", "Final", instituto, huracan, [1, 1], 1, {
+        homePenalties: 4,
+        awayPenalties: 4,
+      }),
+    ]);
+    expect(lead).toBeNull();
+  });
+
   it("names the Copa Argentina champion and says nothing more after another final", () => {
     expect(
       build([knockout("copa-argentina", "Final", boca, banfield, [2, 0], 1)]).lead?.summary,
@@ -174,6 +184,20 @@ describe("buildFrontPage matches", () => {
       "Primera Nacional, octavos de final",
     ]);
     expect(results.days[0].groups[1].matches[0].status).toBe("postponed");
+  });
+
+  it("keeps a match that kicked off before the data caught up, without a score", () => {
+    const { upcoming, results } = build([
+      league(boca, banfield, "2026-11-16T14:40:00Z", { homeGoals: 0, awayGoals: 0 }),
+    ]);
+    expect(upcoming.days).toEqual([]);
+    const [row] = results.days[0].groups[0].matches;
+    expect([row.home.name, row.status, row.homeGoals, row.time]).toEqual([
+      "Boca Juniors",
+      "scheduled",
+      null,
+      "11:40",
+    ]);
   });
 
   it("shows ten matches a side and links to the competitions of the rest", () => {
