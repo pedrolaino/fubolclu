@@ -21,6 +21,22 @@ test("the front page leads with this week's news and shows every competition", a
   );
 });
 
+test("the header shows every section on a 360px screen", async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 740 });
+  await page.goto("/");
+  const nav = page.getByRole("banner").getByRole("navigation");
+  for (const name of [
+    "Liga Profesional",
+    "Primera Nacional",
+    "Copa Argentina",
+    "Cómo se define todo",
+  ]) {
+    const box = (await nav.getByRole("link", { name, exact: true }).boundingBox())!;
+    expect(box.x).toBeGreaterThanOrEqual(0);
+    expect(box.x + box.width).toBeLessThanOrEqual(360);
+  }
+});
+
 test("a match on the front page links to its page", async ({ page }) => {
   await page.goto("/");
   const match = page.getByRole("main").locator('a[href^="/partidos/"]').first();

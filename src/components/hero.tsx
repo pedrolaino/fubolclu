@@ -7,11 +7,12 @@ import { useState } from "react";
 import type { TeamView } from "@/lib/league";
 import { Crest } from "./crest";
 
+// [href, name, short name for screens under 860px]
 const links = [
-  ["/liga-profesional", "Liga Profesional"],
-  ["/primera-nacional", "Primera Nacional"],
-  ["/copa-argentina", "Copa Argentina"],
-  ["/como-se-define", "Cómo se define todo"],
+  ["/liga-profesional", "Liga Profesional", "Liga"],
+  ["/primera-nacional", "Primera Nacional", "Nacional"],
+  ["/copa-argentina", "Copa Argentina", "Copa"],
+  ["/como-se-define", "Cómo se define todo", "Cómo se define"],
 ];
 
 export function Hero({
@@ -54,22 +55,30 @@ export function Hero({
         onAnimationComplete={() => setUnder(subject.lead)}
       />
       <div className="relative mx-auto max-w-[1200px] px-4">
-        <nav className="flex h-[60px] items-center gap-7 overflow-x-auto text-[15px] font-semibold whitespace-nowrap">
-          <Link href="/" className="display mr-3 text-[30px]">
+        <nav className="flex flex-wrap items-center text-[15px] font-semibold whitespace-nowrap wide:h-[60px] wide:flex-nowrap wide:gap-7">
+          <Link
+            href="/"
+            className="display mr-3 basis-full pt-4 pb-1 text-[30px] wide:basis-auto wide:p-0"
+          >
             FubolClu
           </Link>
-          {links.map(([href, label]) => (
-            <Link
-              key={href}
-              href={href}
-              aria-current={pathname.startsWith(href) ? "page" : undefined}
-              className="flex h-full items-center hover:underline aria-[current]:shadow-[inset_0_-3px_currentColor]"
-            >
-              {label}
-            </Link>
-          ))}
+          <div className="flex h-11 w-full justify-between wide:contents">
+            {links.map(([href, label, short]) => (
+              <Link
+                key={href}
+                href={href}
+                aria-current={pathname.startsWith(href) ? "page" : undefined}
+                className="flex h-full items-center hover:underline aria-[current]:shadow-[inset_0_-3px_currentColor]"
+              >
+                <span aria-hidden className="wide:hidden">
+                  {short}
+                </span>
+                <span className="sr-only wide:not-sr-only">{label}</span>
+              </Link>
+            ))}
+          </div>
         </nav>
-        <div className="grid items-end gap-6 pt-6 wide:grid-cols-[1fr_auto] wide:pt-10">
+        <div className="relative grid items-end gap-6 pt-6 wide:grid-cols-[1fr_auto] wide:pt-10">
           <div className="min-w-0">
             <p className="mb-[18px] max-w-[24ch] font-medium wide:max-w-[32ch] wide:text-xl">
               {summary}
@@ -89,7 +98,7 @@ export function Hero({
           {sticker && (
             <motion.div
               key={subject.id}
-              className="absolute top-[68px] right-3.5 z-10 wide:static wide:mr-[60px] wide:translate-y-[70px]"
+              className="absolute top-3 -right-0.5 z-10 wide:static wide:mr-[60px] wide:translate-y-[70px]"
               // A morphing sticker arrives already visible.
               initial={shareCrest ? false : { scale: 1.35, rotate: 20, opacity: 0 }}
               animate={{ scale: 1, rotate: 8, opacity: 1 }}
