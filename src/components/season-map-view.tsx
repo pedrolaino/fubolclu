@@ -5,19 +5,13 @@ import { useState } from "react";
 import type { TeamView } from "@/lib/league";
 import {
   describeTeam,
+  stateLabel,
   type SeasonMap,
   type SeatView,
   type SourceView,
-  type State,
 } from "@/lib/season-map";
 import { Crest } from "./crest";
 import { Hero } from "./hero";
-
-const stateLabel: Record<State, string> = {
-  decided: "Definido",
-  today: "Si terminara hoy",
-  open: "Todavía abierto",
-};
 
 function TeamLink({ team, size = 34 }: { team: TeamView; size?: number }) {
   return (

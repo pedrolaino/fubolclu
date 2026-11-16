@@ -17,6 +17,12 @@ type Contest = "apertura" | "clausura" | "copa-argentina";
 // "decided" is final, "today" is how it stands if the table closed now, "open" has no holder yet.
 export type State = "decided" | "today" | "open";
 
+export const stateLabel: Record<State, string> = {
+  decided: "Definido",
+  today: "Si terminara hoy",
+  open: "Todavía abierto",
+};
+
 export interface Entry {
   team: TeamView;
   note: string;
