@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { nobody } from "@/components/empty-page";
 import { Hero } from "@/components/hero";
 import { h2 } from "@/components/front-page";
-import { paint } from "@/lib/paint";
 
 export const metadata: Metadata = { title: "Página no encontrada" };
-
-const nobody = { id: 0, name: "", slug: "", logoUrl: null, ...paint(0) };
 
 const competitions = [
   ["/liga-profesional", "Liga Profesional"],
