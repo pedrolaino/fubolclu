@@ -1,0 +1,387 @@
+[
+  {
+    "teamId": 394797,
+    "name": "Aldosivi",
+    "season": 2025,
+    "played": 32,
+    "points": 30
+  },
+  {
+    "teamId": 390542,
+    "name": "Argentinos Juniors",
+    "season": 2024,
+    "played": 41,
+    "points": 56
+  },
+  {
+    "teamId": 390542,
+    "name": "Argentinos Juniors",
+    "season": 2025,
+    "played": 32,
+    "points": 57
+  },
+  {
+    "teamId": 387989,
+    "name": "Atlético Tucumán",
+    "season": 2024,
+    "played": 41,
+    "points": 50
+  },
+  {
+    "teamId": 387989,
+    "name": "Atlético Tucumán",
+    "season": 2025,
+    "played": 32,
+    "points": 34
+  },
+  {
+    "teamId": 382883,
+    "name": "Banfield",
+    "season": 2024,
+    "played": 41,
+    "points": 41
+  },
+  {
+    "teamId": 382883,
+    "name": "Banfield",
+    "season": 2025,
+    "played": 32,
+    "points": 35
+  },
+  {
+    "teamId": 2070416,
+    "name": "Barracas Central",
+    "season": 2024,
+    "played": 41,
+    "points": 49
+  },
+  {
+    "teamId": 2070416,
+    "name": "Barracas Central",
+    "season": 2025,
+    "played": 32,
+    "points": 49
+  },
+  {
+    "teamId": 375224,
+    "name": "Belgrano Cordoba",
+    "season": 2024,
+    "played": 41,
+    "points": 49
+  },
+  {
+    "teamId": 375224,
+    "name": "Belgrano Cordoba",
+    "season": 2025,
+    "played": 32,
+    "points": 37
+  },
+  {
+    "teamId": 384585,
+    "name": "Boca Juniors",
+    "season": 2024,
+    "played": 41,
+    "points": 67
+  },
+  {
+    "teamId": 384585,
+    "name": "Boca Juniors",
+    "season": 2025,
+    "played": 32,
+    "points": 62
+  },
+  {
+    "teamId": 907099,
+    "name": "Central Cordoba de Santiago",
+    "season": 2024,
+    "played": 41,
+    "points": 42
+  },
+  {
+    "teamId": 907099,
+    "name": "Central Cordoba de Santiago",
+    "season": 2025,
+    "played": 32,
+    "points": 42
+  },
+  {
+    "teamId": 376926,
+    "name": "Defensa y Justicia",
+    "season": 2024,
+    "played": 41,
+    "points": 58
+  },
+  {
+    "teamId": 376926,
+    "name": "Defensa y Justicia",
+    "season": 2025,
+    "played": 32,
+    "points": 38
+  },
+  {
+    "teamId": 405860,
+    "name": "Deportivo Riestra",
+    "season": 2024,
+    "played": 40,
+    "points": 47
+  },
+  {
+    "teamId": 405860,
+    "name": "Deportivo Riestra",
+    "season": 2025,
+    "played": 32,
+    "points": 52
+  },
+  {
+    "teamId": 383734,
+    "name": "Estudiantes de La Plata",
+    "season": 2024,
+    "played": 41,
+    "points": 63
+  },
+  {
+    "teamId": 383734,
+    "name": "Estudiantes de La Plata",
+    "season": 2025,
+    "played": 32,
+    "points": 42
+  },
+  {
+    "teamId": 370118,
+    "name": "Gimnasia La Plata",
+    "season": 2024,
+    "played": 41,
+    "points": 48
+  },
+  {
+    "teamId": 370118,
+    "name": "Gimnasia La Plata",
+    "season": 2025,
+    "played": 32,
+    "points": 38
+  },
+  {
+    "teamId": 379479,
+    "name": "Huracan",
+    "season": 2024,
+    "played": 41,
+    "points": 62
+  },
+  {
+    "teamId": 379479,
+    "name": "Huracan",
+    "season": 2025,
+    "played": 32,
+    "points": 47
+  },
+  {
+    "teamId": 403307,
+    "name": "Independ. Rivadavia",
+    "season": 2024,
+    "played": 41,
+    "points": 46
+  },
+  {
+    "teamId": 403307,
+    "name": "Independ. Rivadavia",
+    "season": 2025,
+    "played": 32,
+    "points": 43
+  },
+  {
+    "teamId": 386287,
+    "name": "Independiente",
+    "season": 2024,
+    "played": 41,
+    "points": 63
+  },
+  {
+    "teamId": 386287,
+    "name": "Independiente",
+    "season": 2025,
+    "played": 32,
+    "points": 47
+  },
+  {
+    "teamId": 407562,
+    "name": "Instituto Cordoba",
+    "season": 2024,
+    "played": 41,
+    "points": 53
+  },
+  {
+    "teamId": 407562,
+    "name": "Instituto Cordoba",
+    "season": 2025,
+    "played": 32,
+    "points": 34
+  },
+  {
+    "teamId": 380330,
+    "name": "Lanús",
+    "season": 2024,
+    "played": 41,
+    "points": 59
+  },
+  {
+    "teamId": 380330,
+    "name": "Lanús",
+    "season": 2025,
+    "played": 32,
+    "points": 50
+  },
+  {
+    "teamId": 389691,
+    "name": "Newell’s Old Boys",
+    "season": 2024,
+    "played": 41,
+    "points": 49
+  },
+  {
+    "teamId": 389691,
+    "name": "Newell’s Old Boys",
+    "season": 2025,
+    "played": 32,
+    "points": 33
+  },
+  {
+    "teamId": 906248,
+    "name": "Platense",
+    "season": 2024,
+    "played": 41,
+    "points": 57
+  },
+  {
+    "teamId": 906248,
+    "name": "Platense",
+    "season": 2025,
+    "played": 32,
+    "points": 35
+  },
+  {
+    "teamId": 371820,
+    "name": "Racing Club",
+    "season": 2024,
+    "played": 41,
+    "points": 70
+  },
+  {
+    "teamId": 371820,
+    "name": "Racing Club",
+    "season": 2025,
+    "played": 32,
+    "points": 53
+  },
+  {
+    "teamId": 370969,
+    "name": "River Plate",
+    "season": 2024,
+    "played": 41,
+    "points": 70
+  },
+  {
+    "teamId": 370969,
+    "name": "River Plate",
+    "season": 2025,
+    "played": 32,
+    "points": 53
+  },
+  {
+    "teamId": 372671,
+    "name": "Rosario Central",
+    "season": 2024,
+    "played": 40,
+    "points": 46
+  },
+  {
+    "teamId": 372671,
+    "name": "Rosario Central",
+    "season": 2025,
+    "played": 32,
+    "points": 66
+  },
+  {
+    "teamId": 392244,
+    "name": "San Lorenzo de Almagro",
+    "season": 2024,
+    "played": 41,
+    "points": 45
+  },
+  {
+    "teamId": 392244,
+    "name": "San Lorenzo de Almagro",
+    "season": 2025,
+    "played": 32,
+    "points": 51
+  },
+  {
+    "teamId": 404158,
+    "name": "Sarmiento de Junín",
+    "season": 2024,
+    "played": 41,
+    "points": 35
+  },
+  {
+    "teamId": 404158,
+    "name": "Sarmiento de Junín",
+    "season": 2025,
+    "played": 32,
+    "points": 35
+  },
+  {
+    "teamId": 388840,
+    "name": "Talleres Córdoba",
+    "season": 2024,
+    "played": 41,
+    "points": 72
+  },
+  {
+    "teamId": 388840,
+    "name": "Talleres Córdoba",
+    "season": 2025,
+    "played": 32,
+    "points": 34
+  },
+  {
+    "teamId": 385436,
+    "name": "Tigre",
+    "season": 2024,
+    "played": 41,
+    "points": 39
+  },
+  {
+    "teamId": 385436,
+    "name": "Tigre",
+    "season": 2025,
+    "played": 32,
+    "points": 49
+  },
+  {
+    "teamId": 376075,
+    "name": "Unión Santa Fe",
+    "season": 2024,
+    "played": 41,
+    "points": 60
+  },
+  {
+    "teamId": 376075,
+    "name": "Unión Santa Fe",
+    "season": 2025,
+    "played": 32,
+    "points": 39
+  },
+  {
+    "teamId": 373522,
+    "name": "Vélez Sarsfield",
+    "season": 2024,
+    "played": 41,
+    "points": 76
+  },
+  {
+    "teamId": 373522,
+    "name": "Vélez Sarsfield",
+    "season": 2025,
+    "played": 32,
+    "points": 40
+  }
+]
