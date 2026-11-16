@@ -20,6 +20,10 @@ export async function Footer() {
             <a href="https://highlightly.net" className="underline hover:text-ink">
               Datos de Highlightly
             </a>
+            . Escudos de{" "}
+            <a href="https://www.thesportsdb.com" className="underline hover:text-ink">
+              TheSportsDB
+            </a>
             . El{" "}
             <a href="https://github.com/pedrolaino/fubolclu" className="underline hover:text-ink">
               código
