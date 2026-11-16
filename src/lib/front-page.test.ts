@@ -47,17 +47,37 @@ function knockout(
 const build = (matches: TeamMatch[]) => buildFrontPage({ teams, matches }, now);
 
 describe("buildFrontPage lead", () => {
-  it("picks the winner of the deepest knockout match of the last week", () => {
+  it("puts a top-flight or cup result before any of the Primera Nacional", () => {
     const { lead } = build([
       knockout("copa-argentina", "Semi-finals", banfield, boca, [0, 3], 2),
       knockout("primera-nacional", "Super Final", godoy, tristan, [3, 1], 1),
       knockout("primera-nacional", "Round of 16", instituto, huracan, [2, 0], 0),
     ]);
+    expect(lead?.subject.name).toBe("Boca Juniors");
+    expect(lead?.title).toBe("Boca Juniors");
+    expect(lead?.summary).toBe(
+      "Le ganó 3-0 a Banfield en las semifinales de la Copa Argentina el sábado 14 de noviembre. Pasa a la final.",
+    );
+  });
+
+  it("gives the cover to the Primera Nacional only when the others have no result", () => {
+    const { lead } = build([
+      knockout("primera-nacional", "Super Final", godoy, tristan, [3, 1], 1),
+      knockout("primera-nacional", "Round of 16", instituto, huracan, [2, 0], 0),
+      knockout("copa-argentina", "Semi-finals", banfield, boca, [0, 3], 9),
+    ]);
     expect(lead?.subject.name).toBe("Godoy Cruz");
-    expect(lead?.title).toBe("Godoy Cruz");
     expect(lead?.summary).toBe(
       "Le ganó 3-1 a Tristán Suárez en la final de la Primera Nacional el domingo 15 de noviembre. Es el campeón y el primer ascenso a la Liga Profesional.",
     );
+  });
+
+  it("orders top-flight and cup results by stage before kickoff", () => {
+    const { lead } = build([
+      knockout("liga-profesional", "Quarter-finals", instituto, huracan, [2, 0], 0),
+      knockout("copa-argentina", "Semi-finals", banfield, boca, [0, 3], 2),
+    ]);
+    expect(lead?.subject.name).toBe("Boca Juniors");
   });
 
   it("ignores matches older than a week and unfinished or undecided ones", () => {
@@ -164,6 +184,39 @@ describe("buildFrontPage matches", () => {
       ["Boca Juniors", "18:00"],
     ]);
     expect(upcoming.more).toEqual([]);
+  });
+
+  it("groups matches without a confirmed kickoff after the dated days", () => {
+    const placeholder = "2026-11-22T21:00:00Z";
+    const { upcoming } = build([
+      league(boca, banfield, placeholder),
+      league(instituto, huracan, placeholder),
+      league(godoy, tristan, placeholder),
+      league(banfield, boca, placeholder),
+      knockout("copa-argentina", "Final", boca, huracan, [0, 0], 0, {
+        status: "scheduled",
+        kickoff: new Date("2026-11-21T23:00:00Z"),
+      }),
+    ]);
+    expect(upcoming.days.map((d) => d.day)).toEqual([
+      "sábado 21 de noviembre",
+      "Fecha a confirmar",
+    ]);
+    const [group] = upcoming.days[1].groups;
+    expect(group.label).toBe("Clausura, octavos de final");
+    expect(group.matches.map((m) => [m.home.name, m.time, m.unconfirmed])).toEqual([
+      ["Boca Juniors", "", true],
+      ["Instituto", "", true],
+      ["Godoy Cruz", "", true],
+      ["Banfield", "", true],
+    ]);
+
+    const three = build([
+      league(boca, banfield, placeholder),
+      league(instituto, huracan, placeholder),
+      league(godoy, tristan, placeholder),
+    ]);
+    expect(three.upcoming.days.map((d) => d.day)).toEqual(["domingo 22 de noviembre"]);
   });
 
   it("lists the last four days' results, latest day first", () => {

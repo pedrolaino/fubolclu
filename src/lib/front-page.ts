@@ -7,7 +7,7 @@ import {
   type MatchView,
   type TeamView,
 } from "@/lib/league";
-import { contestName, tieWinner } from "@/lib/results";
+import { contestName, tieWinner, unconfirmedKickoff } from "@/lib/results";
 import { competitionName, roundOf, toTeamView, type TeamData, type TeamMatch } from "@/lib/team";
 
 export interface FrontData {
@@ -57,6 +57,9 @@ function consequence(m: TeamMatch) {
   return next ? `Pasa a ${next}.` : "";
 }
 
+// The second division only takes the cover when the top flight and the cup have no result.
+const tier = (m: TeamMatch) => (m.competition === "primera-nacional" ? 1 : 0);
+
 // The front page's subject: the winner of the deepest knockout match of the last week.
 function pickLead(data: FrontData, team: (id: number) => TeamView, now: Date): Lead | null {
   const [m] = data.matches
@@ -69,6 +72,7 @@ function pickLead(data: FrontData, team: (id: number) => TeamView, now: Date): L
     )
     .sort(
       (a, b) =>
+        tier(a) - tier(b) ||
         stageDepth(b) - stageDepth(a) ||
         b.kickoff.getTime() - a.kickoff.getTime() ||
         competitions.indexOf(a.competition) - competitions.indexOf(b.competition),
@@ -92,12 +96,19 @@ function pickLead(data: FrontData, team: (id: number) => TeamView, now: Date): L
   };
 }
 
-function side(matches: TeamMatch[], team: (id: number) => TeamView): Side {
+function side(
+  matches: TeamMatch[],
+  team: (id: number) => TeamView,
+  tbd: (m: TeamMatch) => boolean,
+): Side {
   const days: Day[] = [];
+  // Matches whose kickoff is still the round's placeholder go together after the dated days.
+  const undated: Day = { day: "Fecha a confirmar", groups: [] };
   for (const m of matches.slice(0, shown)) {
+    const unconfirmed = tbd(m);
     const day = dayLabel(m.kickoff);
-    if (days.at(-1)?.day !== day) days.push({ day, groups: [] });
-    const { groups } = days.at(-1)!;
+    if (!unconfirmed && days.at(-1)?.day !== day) days.push({ day, groups: [] });
+    const { groups } = unconfirmed ? undated : days.at(-1)!;
     const label = `${competitionName(m)}, ${roundName(m).toLowerCase()}`;
     let group = groups.find((g) => g.label === label);
     if (!group) groups.push((group = { label, matches: [] }));
@@ -113,9 +124,11 @@ function side(matches: TeamMatch[], team: (id: number) => TeamView): Side {
       awayGoals: scored ? m.awayGoals : null,
       homePenalties: scored ? m.homePenalties : null,
       awayPenalties: scored ? m.awayPenalties : null,
-      time: timeLabel(m.kickoff),
+      unconfirmed,
+      time: unconfirmed ? "" : timeLabel(m.kickoff),
     });
   }
+  if (undated.groups.length) days.push(undated);
   const rest = matches.slice(shown);
   const more = competitions
     .map((c) => ({
@@ -132,6 +145,7 @@ export function buildFrontPage(data: FrontData, now: Date) {
   const team = (id: number) => teams.get(id)!;
   const t = now.getTime();
   const byKickoff = data.matches.toSorted((a, b) => a.kickoff.getTime() - b.kickoff.getTime());
+  const tbd = unconfirmedKickoff(data.matches);
 
   const upcoming = byKickoff.filter(
     (m) => m.status === "scheduled" && m.kickoff > now && m.kickoff.getTime() - t <= 7 * DAY,
@@ -141,7 +155,7 @@ export function buildFrontPage(data: FrontData, now: Date) {
     .filter((m) => m.kickoff <= now && t - m.kickoff.getTime() <= 4 * DAY)
     .reverse();
   // Latest day first, but each day's matches in the order they were played.
-  const recent = side(results, team);
+  const recent = side(results, team, tbd);
   for (const day of recent.days) {
     day.groups.reverse();
     for (const g of day.groups) g.matches.reverse();
@@ -149,7 +163,7 @@ export function buildFrontPage(data: FrontData, now: Date) {
 
   return {
     lead: pickLead(data, team, now),
-    upcoming: side(upcoming, team),
+    upcoming: side(upcoming, team, tbd),
     results: recent,
   };
 }
