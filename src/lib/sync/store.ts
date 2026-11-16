@@ -13,19 +13,23 @@ import {
   type Competition,
 } from "@/db/schema";
 import type { MatchDetail, MatchPage, Standing, Team } from "@/lib/provider";
-import { slugify } from "@/lib/slug";
 import type { PlannedMatch } from "./plan";
+import { teamSlugs } from "./slugs";
 
 export async function upsertTeams(list: Team[]) {
   if (!list.length) return;
-  const unique = [...new Map(list.map((t) => [t.id, t])).values()];
+  const unique = [...new Map(list.map((t) => [t.id, t])).values()].map((t) => ({
+    ...t,
+    name: teamInfo[t.id]?.name ?? t.name,
+  }));
+  const slugs = teamSlugs(
+    unique,
+    await db.select({ id: teams.id, name: teams.name, slug: teams.slug }).from(teams),
+  );
   await db
     .insert(teams)
     .values(
-      unique.map((t) => {
-        const name = teamInfo[t.id]?.name ?? t.name;
-        return { id: t.id, name, slug: slugify(name), logoUrl: t.logoUrl };
-      }),
+      unique.map((t) => ({ id: t.id, name: t.name, slug: slugs.get(t.id)!, logoUrl: t.logoUrl })),
     )
     .onConflictDoUpdate({
       target: teams.id,
@@ -171,14 +175,22 @@ export async function startRun(at: Date) {
   return run.id;
 }
 
-export async function finishRun(id: number, requestsUsed: number, error?: unknown) {
+export async function finishRun(
+  id: number,
+  requestsUsed: number,
+  error?: unknown,
+  status = error ? "error" : "ok",
+) {
   await db
     .update(syncRuns)
-    .set({
-      finishedAt: new Date(),
-      requestsUsed,
-      status: error ? "error" : "ok",
-      error: error ? String(error) : null,
-    })
+    .set({ finishedAt: new Date(), requestsUsed, status, error: error ? String(error) : null })
     .where(eq(syncRuns.id, id));
+}
+
+// Only one sync runs at a time, so a row still running belongs to a job that was killed.
+export async function closeStaleRuns() {
+  await db
+    .update(syncRuns)
+    .set({ status: "error", error: "Interrupted: the job ended before finishing the run" })
+    .where(eq(syncRuns.status, "running"));
 }
