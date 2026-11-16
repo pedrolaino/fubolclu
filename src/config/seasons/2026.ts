@@ -14,7 +14,7 @@ export const season2026: SeasonConfig = {
         { label: /^Clausura - (\d+)$/, phase: "league", tournament: "clausura" },
         { label: /./, phase: "knockout", tournament: "clausura" },
       ],
-      playoffSpots: 8,
+      zoneLines: [{ top: 8, note: "Sobre la línea, los 8 que juegan los octavos de final." }],
       annual: { libertadores: 3, relegated: 1 },
       averages: { relegated: 1 },
     },
@@ -25,6 +25,13 @@ export const season2026: SeasonConfig = {
       rounds: [
         { label: /^Regular Season - (\d+)$/, phase: "league" },
         { label: /./, phase: "knockout" },
+      ],
+      zoneLines: [
+        {
+          top: 8,
+          note: "Sobre la primera línea, los 8 mejores de la zona. El primero juega la final por el título y el primer ascenso; del segundo al octavo, el Reducido por el segundo ascenso.",
+        },
+        { bottom: 2, note: "Debajo de la segunda línea, los 2 que descienden." },
       ],
     },
     {

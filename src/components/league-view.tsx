@@ -21,7 +21,7 @@ const secondary = "hidden wide:table-cell";
 
 function TeamCell({ team, children }: { team: TeamView; children?: React.ReactNode }) {
   return (
-    <td className="px-2 py-[7px] text-[15px] font-semibold whitespace-nowrap wide:text-[17px]">
+    <td className="px-2 py-[7px] text-[15px] font-semibold wide:text-[17px] wide:whitespace-nowrap">
       <Link
         href={`/equipos/${team.slug}`}
         className="inline-flex items-center gap-3 hover:underline"

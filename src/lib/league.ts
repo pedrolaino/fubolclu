@@ -118,7 +118,7 @@ export function roundName(m: RoundInfo) {
   return knockout(m)?.[1] ?? m.roundLabel;
 }
 
-function roundPhrase(m: RoundInfo) {
+export function roundPhrase(m: RoundInfo) {
   if (m.phase === "league" && m.matchday !== null) return `la fecha ${m.matchday}`;
   return knockout(m)?.[2] ?? m.roundLabel;
 }
@@ -177,7 +177,10 @@ export function buildLeague(data: LeagueData, config: CompetitionSeason, now: Da
       : gap === 0
         ? `, igualado con ${team(second.teamId).name}`
         : `, ${gap} más que ${team(second.teamId).name}`;
-    const spots = config.playoffSpots;
+    const zoneLines = (config.zoneLines ?? []).map((l) => ({
+      at: "top" in l ? l.top : rows.length - l.bottom,
+      note: l.note,
+    }));
     tabs.push({
       kind: "table",
       key: `zona-${letter.toLowerCase()}`,
@@ -190,8 +193,8 @@ export function buildLeague(data: LeagueData, config: CompetitionSeason, now: Da
           : `Lidera ${zone} con ${plural(first.points, "punto", "puntos")}${margin}.`) +
         nextMatch(first.teamId),
       rows: toRows(rows, matches),
-      lines: spots && spots < rows.length ? [spots] : [],
-      notes: spots ? [`Sobre la línea, los ${spots} que juegan los octavos de final.`] : [],
+      lines: zoneLines.map((l) => l.at).filter((n) => n > 0 && n < rows.length),
+      notes: zoneLines.map((l) => l.note),
     });
   });
 

@@ -59,6 +59,34 @@ describe("roundName", () => {
   });
 });
 
+describe("buildLeague without tournaments", () => {
+  const nacional = season2026.competitions[1];
+  const zones = [
+    { groupName: "Group 1", teamId: 407562 },
+    { groupName: "Group 1", teamId: 384585 },
+    { groupName: "Group 2", teamId: 370969 },
+    { groupName: "Group 2", teamId: 371820 },
+  ];
+  const played = [match(407562, 384585, [2, 0], 1), match(370969, 371820, [1, 1], 1)].map((m) => ({
+    ...m,
+    roundLabel: "Regular Season - 1",
+    tournament: null,
+  }));
+
+  it("names the zones after the provider's groups, without a tournament", () => {
+    const { tabs } = buildLeague(data(played, { groups: zones }), nacional, now);
+    expect(tabs.map((t) => t.key)).toEqual(["zona-a", "zona-b"]);
+    expect(tabs[0].summary).toBe("Ganó la Zona A con 3 puntos.");
+    expect(tabs[1].summary).toBe("Ganó la Zona B con 1 punto.");
+  });
+
+  it("keeps the notes of both lines", () => {
+    const { tabs } = buildLeague(data(played, { groups: zones }), nacional, now);
+    expect(tabs[0].notes).toHaveLength(2);
+    expect(tabs[0].notes[1]).toContain("descienden");
+  });
+});
+
 describe("buildLeague", () => {
   const played = [
     match(407562, 384585, [2, 0], 1),
@@ -96,8 +124,21 @@ describe("buildLeague", () => {
   });
 
   it("draws the line under the playoff places", () => {
-    const { tabs } = buildLeague(data(played), { ...config, playoffSpots: 1 }, now);
+    const zoneLines = [{ top: 1, note: "juegan" }];
+    const { tabs } = buildLeague(data(played), { ...config, zoneLines }, now);
     expect(tabs[0].kind === "table" && tabs[0].lines).toEqual([1]);
+    expect(tabs[0].notes).toEqual(["juegan"]);
+  });
+
+  it("counts a bottom line from the last row of each zone", () => {
+    const zoneLines = [{ bottom: 1, note: "descienden" }];
+    const { tabs } = buildLeague(data(played), { ...config, zoneLines }, now);
+    expect(tabs[0].kind === "table" && tabs[0].lines).toEqual([1]);
+  });
+
+  it("keeps the line note of the Liga Profesional", () => {
+    const { tabs } = buildLeague(data(played), config, now);
+    expect(tabs[0].notes).toEqual(["Sobre la línea, los 8 que juegan los octavos de final."]);
   });
 
   it("builds averages from past seasons plus this one, worst team as the subject", () => {

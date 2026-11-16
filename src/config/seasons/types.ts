@@ -13,8 +13,9 @@ export interface CompetitionSeason {
   standings: boolean;
   // First match wins.
   rounds: RoundRule[];
-  // Teams per zone that go on to the knockouts.
-  playoffSpots?: number;
+  // A line on every zone table: under the first `top` teams or above the last `bottom` ones.
+  // The note says what the line means.
+  zoneLines?: ({ top: number; note: string } | { bottom: number; note: string })[];
   // Season-long table of both tournaments' league phases.
   annual?: { libertadores: number; relegated: number };
   // Points per game over the last three seasons.
