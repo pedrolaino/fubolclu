@@ -9,7 +9,9 @@ import { loadTeam, teamSlugs } from "@/db/team";
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {
-  return teamSlugs();
+  const slugs = await teamSlugs();
+  // The build needs at least one; with an empty database "-" just renders the 404.
+  return slugs.length ? slugs : [{ slug: "-" }];
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

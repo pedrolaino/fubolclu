@@ -11,7 +11,9 @@ import type { TeamView } from "@/lib/league";
 type Props = { params: Promise<{ id: string }> };
 
 export async function generateStaticParams() {
-  return (await sampleMatchIds(8)).map((id) => ({ id: String(id) }));
+  const ids = await sampleMatchIds(8);
+  // The build needs at least one; with an empty database "0" just renders the 404.
+  return ids.length ? ids.map((id) => ({ id: String(id) })) : [{ id: "0" }];
 }
 
 async function load({ params }: Props) {
