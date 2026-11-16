@@ -5,6 +5,7 @@ import { Hero } from "@/components/hero";
 import { PositionChart } from "@/components/position-chart";
 import { TeamAside } from "@/components/team-aside";
 import { loadTeam, teamSlugs } from "@/db/team";
+import { paintStyle } from "@/lib/paint";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -25,7 +26,7 @@ export default async function Team({ params }: Props) {
   const { team, standing, scorers, upcoming, results } = view;
 
   return (
-    <div style={{ "--lead": team.lead } as React.CSSProperties}>
+    <div style={paintStyle(team)}>
       <Hero subject={team} title={team.name} summary={view.summary} shareCrest />
       <main
         className={`mx-auto grid max-w-[1200px] gap-10 px-4 pt-9 pb-20 ${

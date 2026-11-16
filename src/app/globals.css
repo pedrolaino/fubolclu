@@ -14,11 +14,13 @@
 /* Set per page from the team in charge of it. */
 @theme inline {
   --color-lead: var(--lead);
+  --color-lead-ink: var(--lead-ink);
   --color-on-lead: var(--on-lead);
 }
 
 :root {
   --lead: #000;
+  --lead-ink: #000;
   --on-lead: #fff;
 }
 

@@ -14,6 +14,7 @@ import { loadFrontPage } from "@/db/front-page";
 import { loadLeague } from "@/db/queries";
 import { loadSeasonMap } from "@/db/season-map";
 import type { Tab } from "@/lib/league";
+import { paintStyle } from "@/lib/paint";
 
 const seatKeys = [
   "campeon-apertura",
@@ -49,7 +50,7 @@ export default async function Home() {
   const cupLine = map?.seats.find((s) => s.key === "copa-argentina")?.line;
 
   return (
-    <div style={{ "--lead": hero.subject.lead } as React.CSSProperties}>
+    <div style={paintStyle(hero.subject)}>
       <Hero subject={hero.subject} title={hero.title} summary={hero.summary} />
       <main className="mx-auto max-w-[1200px] px-4 pt-9 pb-20">
         <div className="grid gap-14 wide:grid-cols-[minmax(0,1fr)_340px]">

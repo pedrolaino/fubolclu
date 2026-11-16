@@ -40,6 +40,7 @@ export interface TeamView {
   logoUrl: string | null;
   lead: string;
   onLead: string;
+  leadInk: string;
 }
 
 export type Result = "W" | "D" | "L";

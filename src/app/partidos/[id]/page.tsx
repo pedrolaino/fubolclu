@@ -7,6 +7,7 @@ import { StatBars } from "@/components/stat-bars";
 import { Timeline } from "@/components/timeline";
 import { loadMatch, sampleMatchIds } from "@/db/match";
 import type { TeamView } from "@/lib/league";
+import { paintStyle } from "@/lib/paint";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -48,7 +49,7 @@ export default async function Match(props: Props) {
   const noEvents = view.finished && !view.awaitingDetails && events.length === 0;
 
   return (
-    <div style={{ "--lead": home.lead } as React.CSSProperties}>
+    <div style={paintStyle(home)}>
       <Hero subject={home} title={view.title} summary={view.summary} />
       <main
         className={`mx-auto grid max-w-[1200px] gap-10 px-4 pt-9 pb-20 ${

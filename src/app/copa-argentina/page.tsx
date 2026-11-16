@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Bracket } from "@/components/bracket";
 import { Hero } from "@/components/hero";
 import { loadCup } from "@/db/cup";
+import { paintStyle } from "@/lib/paint";
 
 export const metadata: Metadata = { title: "Copa Argentina" };
 
@@ -13,7 +14,7 @@ export default async function CopaArgentina() {
   }
   const { hero, rounds, open } = cup;
   return (
-    <div style={{ "--lead": hero.subject.lead } as React.CSSProperties}>
+    <div style={paintStyle(hero.subject)}>
       <Hero subject={hero.subject} title={hero.title} summary={hero.summary} />
       <main className="mx-auto max-w-[1200px] px-4 pt-9 pb-20 wide:pt-32">
         <Bracket rounds={rounds} open={open} />

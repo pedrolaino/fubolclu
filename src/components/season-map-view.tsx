@@ -12,6 +12,7 @@ import {
 } from "@/lib/season-map";
 import { Crest } from "./crest";
 import { Hero } from "./hero";
+import { paintStyle } from "@/lib/paint";
 
 function TeamLink({ team, size = 34 }: { team: TeamView; size?: number }) {
   return (
@@ -125,7 +126,7 @@ export function SeasonMapView({ map }: { map: SeasonMap }) {
   const hit = (team: TeamView | null) => picked !== null && team?.id === picked;
 
   return (
-    <div style={{ "--lead": map.leader.lead } as React.CSSProperties}>
+    <div style={paintStyle(map.leader)}>
       <Hero subject={map.leader} title={map.leader.name} summary={map.summary} />
       <main className="mx-auto max-w-[1200px] px-4 pt-9 pb-20">
         <div className="mb-12 wide:grid wide:grid-cols-[250px_1fr] wide:items-start">

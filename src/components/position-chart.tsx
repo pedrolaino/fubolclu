@@ -66,7 +66,7 @@ export function PositionChart({ standing }: { standing: Standing }) {
       <polyline
         points={points}
         fill="none"
-        stroke="var(--lead)"
+        stroke="var(--lead-ink)"
         strokeWidth={3}
         strokeLinejoin="round"
         strokeLinecap="round"
@@ -75,7 +75,7 @@ export function PositionChart({ standing }: { standing: Standing }) {
         cx={x(end.matchday)}
         cy={y(end.position)}
         r={6}
-        fill="var(--lead)"
+        fill="var(--lead-ink)"
         stroke="var(--color-ink)"
         strokeWidth={2}
       />

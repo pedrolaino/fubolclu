@@ -12,10 +12,10 @@ export function StatBars({ rows }: { rows: StatRow[] }) {
           </div>
           <div aria-hidden className="mt-1.5 grid grid-cols-2 gap-1">
             <div className="flex justify-end">
-              <span className="h-2 bg-lead" style={{ width: `${r.homeShare * 100}%` }} />
+              <span className="h-2 bg-lead-ink" style={{ width: `${r.homeShare * 100}%` }} />
             </div>
             <div>
-              <span className="block h-2 bg-ink" style={{ width: `${r.awayShare * 100}%` }} />
+              <span className="block h-2 bg-faint" style={{ width: `${r.awayShare * 100}%` }} />
             </div>
           </div>
         </li>
