@@ -1,5 +1,5 @@
 import { and, eq, sql } from "drizzle-orm";
-import { teamNames } from "@/config/teams";
+import { teamInfo } from "@/config/teams";
 import { db } from "@/db";
 import {
   apiUsage,
@@ -23,7 +23,7 @@ export async function upsertTeams(list: Team[]) {
     .insert(teams)
     .values(
       unique.map((t) => {
-        const name = teamNames[t.id] ?? t.name;
+        const name = teamInfo[t.id]?.name ?? t.name;
         return { id: t.id, name, slug: slugify(name), logoUrl: t.logoUrl };
       }),
     )
