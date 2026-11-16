@@ -45,7 +45,7 @@ export function Timeline({
                 {e.title}
               </span>
               <span className="block text-[15px]">{e.detail}</span>
-              <span className="block text-[13px] text-mute wide:hidden">
+              <span className="block text-[13px] text-mute wide:sr-only">
                 {home ? homeName : awayName}
               </span>
             </span>

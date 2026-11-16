@@ -6,6 +6,8 @@ import { useSyncExternalStore } from "react";
 import type { AverageRow, Result, ScorerRow, Tab, TableRow, TeamView } from "@/lib/league";
 import { Crest } from "./crest";
 import { Hero } from "./hero";
+import { Tabs, tabId } from "./tabs";
+import { paintStyle } from "@/lib/paint";
 
 const resultName: Record<Result, string> = { W: "Ganó", D: "Empató", L: "Perdió" };
 const resultDot: Record<Result, string> = {
@@ -81,17 +83,14 @@ function StandingsRows({ rows, lines }: { rows: TableRow[]; lines: number[] }) {
         </td>
         <td className={num}>{diff > 0 ? `+${diff}` : diff}</td>
         <td className={`${num} ${secondary}`}>
-          <span className="inline-flex gap-[3px]">
+          <span aria-hidden className="inline-flex gap-[3px]">
             {r.form.map((result, j) => (
-              <i
-                key={j}
-                title={resultName[result]}
-                className={`size-2.5 rounded-full ${resultDot[result]}`}
-              />
+              <i key={j} className={`size-2.5 rounded-full ${resultDot[result]}`} />
             ))}
           </span>
+          <span className="sr-only">{r.form.map((result) => resultName[result]).join(", ")}</span>
         </td>
-        <td className={`${big} w-12 text-right wide:w-16 ${i === 0 ? "text-lead" : ""}`}>
+        <td className={`${big} w-12 text-right wide:w-16 ${i === 0 ? "text-lead-ink" : ""}`}>
           {r.points}
         </td>
       </Row>
@@ -105,7 +104,7 @@ function AverageRows({ rows, lines }: { rows: AverageRow[]; lines: number[] }) {
       <TeamCell team={r.team} />
       <td className={`${num} ${secondary}`}>{r.points}</td>
       <td className={`${num} ${secondary}`}>{r.played}</td>
-      <td className={`${big} w-24 text-right ${i === rows.length - 1 ? "text-lead" : ""}`}>
+      <td className={`${big} w-24 text-right ${i === rows.length - 1 ? "text-lead-ink" : ""}`}>
         {r.average.toFixed(3).replace(".", ",")}
       </td>
     </Row>
@@ -128,7 +127,7 @@ function ScorerRows({ rows }: { rows: ScorerRow[] }) {
         </span>
       </TeamCell>
       <td className={num}>{r.penalties || ""}</td>
-      <td className={`${big} w-16 text-right ${i === 0 ? "text-lead" : ""}`}>{r.goals}</td>
+      <td className={`${big} w-16 text-right ${i === 0 ? "text-lead-ink" : ""}`}>{r.goals}</td>
     </Row>
   ));
 }
@@ -171,27 +170,23 @@ export function LeagueView({ tabs, children }: { tabs: Tab[]; children?: React.R
   const open = (key: string) => window.location.replace(`#${key}`);
 
   return (
-    <div style={{ "--lead": tab.subject.lead } as React.CSSProperties}>
+    <div style={paintStyle(tab.subject)}>
       <Hero subject={tab.subject} title={tab.title} summary={tab.summary} />
       <main className="mx-auto grid max-w-[1200px] gap-10 px-4 pt-9 pb-20 wide:grid-cols-[minmax(0,1fr)_340px] wide:gap-14">
         <section>
-          <div
-            role="tablist"
-            className="display mb-1.5 flex flex-wrap gap-x-4 gap-y-2 wide:gap-x-[22px]"
+          <Tabs
+            items={tabs}
+            current={tab.key}
+            onSelect={open}
+            panelId="tabla"
+            className="mb-1.5 gap-x-4 wide:gap-x-[22px]"
+          />
+          <table
+            id="tabla"
+            role="tabpanel"
+            aria-labelledby={tabId("tabla", tab.key)}
+            className="w-full border-collapse tabular-nums"
           >
-            {tabs.map((t) => (
-              <button
-                key={t.key}
-                role="tab"
-                aria-selected={t.key === tab.key}
-                onClick={() => open(t.key)}
-                className="display cursor-pointer text-2xl text-faint aria-selected:text-ink aria-selected:shadow-[inset_0_-0.16em_var(--lead)] wide:text-3xl"
-              >
-                {t.label}
-              </button>
-            ))}
-          </div>
-          <table className="w-full border-collapse tabular-nums">
             <thead>
               <tr>
                 <th className={`${th} text-left`} colSpan={2}>

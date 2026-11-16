@@ -5,6 +5,7 @@ import { useState } from "react";
 import { dayLabel, timeLabel } from "@/lib/dates";
 import type { BracketRound, Tie } from "@/lib/cup";
 import { Crest } from "./crest";
+import { Tabs, tabId } from "./tabs";
 
 function Side({ tie, side }: { tie: Tie; side: "home" | "away" }) {
   const team = tie[side];
@@ -46,20 +47,19 @@ export function Bracket({ rounds, open }: { rounds: BracketRound[]; open: string
   const [current, setCurrent] = useState(open);
   return (
     <section>
-      <div role="tablist" className="display mb-4 flex flex-wrap gap-x-4 gap-y-2 wide:hidden">
-        {rounds.map((r) => (
-          <button
-            key={r.key}
-            role="tab"
-            aria-selected={r.key === current}
-            onClick={() => setCurrent(r.key)}
-            className="display cursor-pointer text-2xl text-faint aria-selected:text-ink aria-selected:shadow-[inset_0_-0.16em_var(--lead)]"
-          >
-            {r.title}
-          </button>
-        ))}
-      </div>
-      <div className="wide:grid wide:auto-cols-[minmax(200px,1fr)] wide:grid-flow-col wide:gap-5 wide:overflow-x-auto">
+      <Tabs
+        items={rounds.map((r) => ({ key: r.key, label: r.title }))}
+        current={current}
+        onSelect={setCurrent}
+        panelId="cuadro"
+        className="mb-4 gap-x-4 wide:hidden"
+      />
+      <div
+        id="cuadro"
+        role="tabpanel"
+        aria-labelledby={tabId("cuadro", current)}
+        className="wide:grid wide:auto-cols-[minmax(200px,1fr)] wide:grid-flow-col wide:gap-5 wide:overflow-x-auto"
+      >
         {rounds.map((r) => (
           <div key={r.key} className={r.key === current ? "" : "hidden wide:block"}>
             <h2 className="display mb-1 hidden text-[32px] wide:block">{r.title}</h2>
