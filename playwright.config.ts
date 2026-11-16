@@ -1,11 +1,13 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const url = `http://localhost:${process.env.PORT ?? 3000}`;
+
 export default defineConfig({
   testDir: "e2e",
-  use: { baseURL: "http://localhost:3000" },
+  use: { baseURL: url },
   webServer: {
     command: "pnpm build && pnpm start",
-    url: "http://localhost:3000",
+    url,
     reuseExistingServer: !process.env.CI,
     timeout: 180_000,
   },
