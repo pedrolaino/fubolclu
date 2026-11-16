@@ -17,6 +17,8 @@ export const season2026: SeasonConfig = {
       zoneLines: [{ top: 8, note: "Sobre la línea, los 8 que juegan los octavos de final." }],
       annual: { libertadores: 3, relegated: 1 },
       averages: { relegated: 1 },
+      libertadoresDoors: ["apertura", "clausura", "copa-argentina"],
+      trofeoDeCampeones: true,
     },
     {
       competition: "primera-nacional",

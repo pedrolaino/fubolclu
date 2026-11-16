@@ -20,6 +20,10 @@ export interface CompetitionSeason {
   annual?: { libertadores: number; relegated: number };
   // Points per game over the last three seasons.
   averages?: { relegated: number };
+  // Ways into the Copa Libertadores besides the annual table.
+  libertadoresDoors?: ("apertura" | "clausura" | "copa-argentina")[];
+  // The Apertura champion plays the Clausura champion.
+  trofeoDeCampeones?: boolean;
 }
 
 export interface SeasonConfig {
