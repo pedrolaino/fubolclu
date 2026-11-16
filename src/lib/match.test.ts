@@ -26,6 +26,7 @@ const base: MatchData = {
   home,
   away,
   events: [],
+  round: [],
 };
 
 const withMatch = (m: Partial<MatchData["match"]>): MatchData => ({
@@ -94,6 +95,25 @@ describe("buildMatch hero", () => {
     expect(view.summary).toBe(
       "Instituto recibe a Newell's el domingo 22 de noviembre a las 18:00 por los octavos de final del Clausura.",
     );
+  });
+
+  it("says the day and time are not confirmed while the kickoff is the round's placeholder", () => {
+    const scheduled = withMatch({
+      status: "scheduled",
+      homeGoals: null,
+      awayGoals: null,
+      phase: "knockout",
+      roundLabel: "Round of 16",
+      matchday: null,
+      kickoff: new Date("2026-11-22T21:00:00Z"),
+    });
+    const round = Array(4).fill(scheduled.match);
+    const view = buildMatch({ ...scheduled, round });
+    expect(view.title).toBe("A confirmar");
+    expect(view.summary).toBe(
+      "Instituto recibe a Newell's por los octavos de final del Clausura. El día y el horario todavía no están confirmados.",
+    );
+    expect(buildMatch({ ...scheduled, round: round.slice(1) }).title).toBe("18:00");
   });
 
   it("says when a match was postponed", () => {

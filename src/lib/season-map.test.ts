@@ -104,6 +104,17 @@ describe("buildSeasonMap", () => {
     );
   });
 
+  it("gives no date for a round whose kickoff is a placeholder", () => {
+    const octavos = [
+      ...tournaments,
+      knockout(5, 6, null, "Round of 16", { kickoff: sunday }),
+      knockout(2, 5, null, "Round of 16", { kickoff: sunday }),
+    ];
+    expect(seat(build([...leagueMatches, ...octavos]), "campeon-clausura").line).toBe(
+      "Siguen vivos 6 equipos. Los octavos de final todavía no tienen fecha confirmada.",
+    );
+  });
+
   it("names the cup finalists while the final is not played", () => {
     const copa = seat(map, "copa-argentina");
     expect(copa.state).toBe("open");

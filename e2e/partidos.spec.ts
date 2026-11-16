@@ -15,9 +15,11 @@ test("a played match without details says so", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Cómo fue" })).toHaveCount(0);
 });
 
-test("a scheduled match shows its kickoff time", async ({ page }) => {
+// A Clausura round-of-16 match still on the provider's shared placeholder kickoff.
+test("a scheduled match without a confirmed kickoff says so", async ({ page }) => {
   await page.goto("/partidos/1403785705");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText(/^\d\d:\d\d$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("A confirmar");
+  await expect(page.getByText("El día y el horario todavía no están confirmados.")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Estadísticas" })).toHaveCount(0);
 });
 

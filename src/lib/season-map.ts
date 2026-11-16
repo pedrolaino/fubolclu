@@ -16,6 +16,7 @@ import {
   ofContest,
   tableState,
   tieWinner,
+  unconfirmedKickoff,
   unplayed,
   withArticle,
 } from "@/lib/results";
@@ -114,6 +115,7 @@ function bracket(matches: LeagueMatch[], names: (id: number) => string, now: Dat
   const champion = final ? winner(final) : null;
   const alive = champion ? [champion] : [...reached].filter(([, r]) => !r.out).map(([id]) => id);
   const next = sorted.find((m) => isUpcoming(m, now));
+  const tbd = unconfirmedKickoff(matches);
 
   let finalLine = "";
   if (final && champion !== null) {
@@ -144,7 +146,7 @@ function bracket(matches: LeagueMatch[], names: (id: number) => string, now: Dat
     champion,
     alive,
     finalLine,
-    next: next ? { round: roundName(next), day: dayLabel(next.kickoff) } : null,
+    next: next ? { round: roundName(next), day: tbd(next) ? null : dayLabel(next.kickoff) } : null,
     place,
   };
 }
@@ -217,8 +219,11 @@ export function buildSeasonMap(
         ? "Ya están los dos finalistas y la final todavía no tiene fecha."
         : alive;
     }
-    const verb = b.next.round === "Final" ? "se juega" : "se juegan";
-    return `${alive} ${upper(phrase(b.next.round))} ${verb} el ${b.next.day}.`;
+    const one = b.next.round === "Final";
+    if (!b.next.day) {
+      return `${alive} ${upper(phrase(b.next.round))} todavía no ${one ? "tiene" : "tienen"} fecha confirmada.`;
+    }
+    return `${alive} ${upper(phrase(b.next.round))} ${one ? "se juega" : "se juegan"} el ${b.next.day}.`;
   }
 
   const contestSeat = (key: Contest): SeatView => {

@@ -24,7 +24,11 @@ export function RoundList({ round }: { round: Round }) {
                 <span
                   className={`figures text-center ${played ? "text-xl" : "text-[17px] text-mute"}`}
                 >
-                  {played ? `${m.homeGoals}-${m.awayGoals}` : timeLabel(m.kickoff)}
+                  {played
+                    ? `${m.homeGoals}-${m.awayGoals}`
+                    : m.unconfirmed
+                      ? "vs"
+                      : timeLabel(m.kickoff)}
                 </span>
                 <span className="flex min-w-0 items-center gap-2">
                   <Crest team={m.away} size={26} />

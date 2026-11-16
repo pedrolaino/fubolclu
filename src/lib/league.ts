@@ -2,7 +2,7 @@ import type { CompetitionSeason } from "@/config/seasons/types";
 import type { MatchStatus } from "@/db/schema";
 import { dayLabel, rangeLabel } from "@/lib/dates";
 import { paint } from "@/lib/paint";
-import { contestName, isUpcoming, ofContest, tableState } from "@/lib/results";
+import { contestName, isUpcoming, ofContest, tableState, unconfirmedKickoff } from "@/lib/results";
 import {
   annualTable,
   averagesTable,
@@ -92,6 +92,8 @@ export interface MatchView {
   awayGoals: number | null;
   homePenalties: number | null;
   awayPenalties: number | null;
+  // Its kickoff is the provider's placeholder for the round, not a real date.
+  unconfirmed: boolean;
 }
 
 export interface Round {
@@ -140,6 +142,7 @@ export function buildLeague(data: LeagueData, config: CompetitionSeason, now: Da
   const team = (id: number) => teams.get(id)!;
   const byKickoff = [...data.matches].sort((a, b) => a.kickoff.getTime() - b.kickoff.getTime());
   const league = byKickoff.filter((m) => m.phase === "league");
+  const tbd = unconfirmedKickoff(data.matches);
 
   // The tournament of the latest league match that has kicked off; null for single-table leagues.
   const tournament =
@@ -152,6 +155,9 @@ export function buildLeague(data: LeagueData, config: CompetitionSeason, now: Da
     if (!m) return "";
     const home = m.homeTeamId === teamId;
     const rival = team(home ? m.awayTeamId : m.homeTeamId).name;
+    if (tbd(m)) {
+      return ` ${home ? "Recibe a" : "Visita a"} ${rival} por ${roundPhrase(m)}; todavía no tiene fecha confirmada.`;
+    }
     return ` El ${dayLabel(m.kickoff)} ${home ? "recibe a" : "visita a"} ${rival} por ${roundPhrase(m)}.`;
   };
 
@@ -309,13 +315,17 @@ export function buildLeague(data: LeagueData, config: CompetitionSeason, now: Da
     awayGoals: m.awayGoals,
     homePenalties: m.homePenalties,
     awayPenalties: m.awayPenalties,
+    unconfirmed: tbd(m),
   });
   const round = (of: LeagueMatch | undefined): Round | null => {
     if (!of) return null;
     const matches = byKickoff.filter((m) => m.roundLabel === of.roundLabel);
+    const dated = matches.filter((m) => !tbd(m));
     return {
       title: roundName(of),
-      day: rangeLabel(matches[0].kickoff, matches.at(-1)!.kickoff),
+      day: dated.length
+        ? rangeLabel(dated[0].kickoff, dated.at(-1)!.kickoff)
+        : "Días y horarios a confirmar",
       matches: matches.map(view),
     };
   };

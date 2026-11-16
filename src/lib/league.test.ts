@@ -185,6 +185,39 @@ describe("buildLeague", () => {
       /recibe a River Plate por la fecha 10\.$/,
     );
   });
+  // The round of 16 before it is scheduled: every match at the same placeholder kickoff.
+  const octavos = (pairs: [number, number][]) =>
+    pairs.map(([home, away]) => ({
+      ...match(home, away, null, 22),
+      roundLabel: "Round of 16",
+      phase: "knockout" as const,
+      matchday: null,
+    }));
+  const four = octavos([
+    [407562, 370969],
+    [384585, 371820],
+    [370969, 384585],
+    [371820, 407562],
+  ]);
+
+  it("gives no date for a next match whose kickoff is a placeholder", () => {
+    const { tabs, next } = buildLeague(data([...played, ...four]), config, now);
+    expect(tabs[0].summary).toBe(
+      "Ganó la Zona A del Clausura con 6 puntos. Recibe a River Plate por los octavos de final; todavía no tiene fecha confirmada.",
+    );
+    expect(next?.day).toBe("Días y horarios a confirmar");
+    expect(next?.matches.every((m) => m.unconfirmed)).toBe(true);
+  });
+
+  it("keeps the date when only three matches share the kickoff", () => {
+    const { tabs, next } = buildLeague(data([...played, ...four.slice(0, 3)]), config, now);
+    expect(tabs[0].summary).toMatch(
+      /El sábado 22 de agosto recibe a River Plate por los octavos de final\.$/,
+    );
+    expect(next?.day).toBe("sábado 22 de agosto");
+    expect(next?.matches.some((m) => m.unconfirmed)).toBe(false);
+  });
+
   it("puts the top scorer's team in charge of the scorers tab", () => {
     const goals = [
       { playerId: 1, playerName: "Eduardo Salvio", teamId: 371820, type: "goal" as const },

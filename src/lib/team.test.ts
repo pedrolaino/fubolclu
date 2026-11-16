@@ -157,6 +157,21 @@ describe("buildTeam", () => {
     );
   });
 
+  it("gives no date for a next match whose kickoff is a placeholder", () => {
+    const octavos = (home: number, away: number) =>
+      match(home, away, null, 22, { phase: "knockout", roundLabel: "Round of 16", matchday: null });
+    const round = [octavos(101, 100), octavos(102, 103), octavos(104, 105), octavos(103, 102)];
+    const view = build(100, data([match(100, 101, [2, 0], 1), ...round]));
+    expect(view.summary).toBe(
+      "Ganó la Zona A del Clausura con 3 puntos. Visita a Boca Juniors por los octavos de final del Clausura; todavía no tiene fecha confirmada.",
+    );
+    expect([view.upcoming[0].date, view.upcoming[0].time]).toEqual(["A confirmar", ""]);
+
+    const dated = build(100, data([match(100, 101, [2, 0], 1), ...round.slice(0, 3)]));
+    expect(dated.summary).toMatch(/El sábado 22 de agosto visita a Boca Juniors/);
+    expect(dated.upcoming[0].date).toBe("sáb 22 ago");
+  });
+
   it("counts the team's own goals scored, notes missing match details", () => {
     const goal = (playerName: string, teamId: number, type = "goal" as const) => ({
       playerId: null,

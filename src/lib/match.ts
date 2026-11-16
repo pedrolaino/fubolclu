@@ -1,6 +1,6 @@
 import type { EventType } from "@/db/schema";
 import { dayLabel, timeLabel } from "@/lib/dates";
-import { tieWinner } from "@/lib/results";
+import { tieWinner, unconfirmedKickoff } from "@/lib/results";
 import type { TeamView } from "@/lib/league";
 import { roundOf, toTeamView, type TeamData, type TeamMatch } from "@/lib/team";
 
@@ -16,6 +16,8 @@ export interface MatchData {
     minute: number;
     extraMinute: number | null;
   }[];
+  // The matches of its competition and round, itself included.
+  round: Pick<TeamMatch, "competition" | "roundLabel" | "status" | "kickoff">[];
 }
 
 export interface TimelineEvent {
@@ -152,7 +154,7 @@ function statRows(data: MatchData): StatRow[] {
   });
 }
 
-function summary(data: MatchData) {
+function summary(data: MatchData, unconfirmed: boolean) {
   const { match: m, home, away } = data;
   const round = roundOf(m);
   const day = dayLabel(m.kickoff);
@@ -166,6 +168,9 @@ function summary(data: MatchData) {
   }
   if (m.status === "live" && scored) {
     return `${home.name} y ${away.name} juegan por ${round} y van ${hg}-${ag}.`;
+  }
+  if (unconfirmed) {
+    return `${home.name} recibe a ${away.name} por ${round}. El día y el horario todavía no están confirmados.`;
   }
   if (m.status !== "finished" || !scored) {
     return `${home.name} recibe a ${away.name} el ${day} a las ${timeLabel(m.kickoff)} por ${round}.`;
@@ -189,12 +194,17 @@ export function buildMatch(data: MatchData) {
   const scored = m.homeGoals !== null && m.awayGoals !== null;
   const home: TeamView = toTeamView(data.home);
   const away: TeamView = toTeamView(data.away);
+  const unconfirmed = unconfirmedKickoff(data.round)(m);
   return {
     home,
     away,
     title:
-      scored && m.status !== "scheduled" ? `${m.homeGoals}-${m.awayGoals}` : timeLabel(m.kickoff),
-    summary: summary(data),
+      scored && m.status !== "scheduled"
+        ? `${m.homeGoals}-${m.awayGoals}`
+        : unconfirmed
+          ? "A confirmar"
+          : timeLabel(m.kickoff),
+    summary: summary(data, unconfirmed),
     finished: m.status === "finished",
     // Only a played match has details to show, and only once they have been fetched.
     awaitingDetails: (m.status === "finished" || m.status === "live") && m.detailsSyncedAt === null,

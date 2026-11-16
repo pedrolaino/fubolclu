@@ -1,4 +1,4 @@
-import { asc, desc, eq, inArray } from "drizzle-orm";
+import { and, asc, desc, eq, inArray } from "drizzle-orm";
 import { db } from "@/db";
 import { matchEvents, matches, teams } from "@/db/schema";
 import { buildMatch } from "@/lib/match";
@@ -18,7 +18,7 @@ export async function loadMatch(id: number) {
   "use cache";
   const [match] = await db.select().from(matches).where(eq(matches.id, id));
   if (!match) return null;
-  const [pair, events] = await Promise.all([
+  const [pair, events, round] = await Promise.all([
     db
       .select()
       .from(teams)
@@ -35,11 +35,27 @@ export async function loadMatch(id: number) {
       .from(matchEvents)
       .where(eq(matchEvents.matchId, id))
       .orderBy(asc(matchEvents.id)),
+    db
+      .select({
+        competition: matches.competition,
+        roundLabel: matches.roundLabel,
+        status: matches.status,
+        kickoff: matches.kickoff,
+      })
+      .from(matches)
+      .where(
+        and(
+          eq(matches.competition, match.competition),
+          eq(matches.season, match.season),
+          eq(matches.roundLabel, match.roundLabel),
+        ),
+      ),
   ]);
   return buildMatch({
     match,
     home: pair.find((t) => t.id === match.homeTeamId)!,
     away: pair.find((t) => t.id === match.awayTeamId)!,
     events,
+    round,
   });
 }

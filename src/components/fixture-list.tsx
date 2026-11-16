@@ -48,7 +48,7 @@ export function FixtureList({ title, fixtures }: { title: string; fixtures: Fixt
                     <span className="figures text-xl">
                       {f.homeGoals}-{f.awayGoals}
                     </span>
-                  ) : f.status === "scheduled" ? (
+                  ) : f.status === "scheduled" && f.time ? (
                     <span className="figures text-[17px] text-mute">{f.time}</span>
                   ) : null}
                   {f.result && (

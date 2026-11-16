@@ -10,7 +10,7 @@ import {
   type TeamView,
 } from "@/lib/league";
 import { paint } from "@/lib/paint";
-import { isUpcoming, tieWinner } from "@/lib/results";
+import { isUpcoming, tieWinner, unconfirmedKickoff } from "@/lib/results";
 
 export type CupMatch = Pick<
   LeagueMatch,
@@ -55,6 +55,7 @@ export function buildCup(data: CupData, now: Date) {
   const teams = new Map(data.teams.map((t) => [t.id, { ...t, ...paint(t.id) }]));
   const team = (id: number): TeamView => teams.get(id)!;
   const byKickoff = [...data.matches].sort((a, b) => a.kickoff.getTime() - b.kickoff.getTime());
+  const tbd = unconfirmedKickoff(data.matches);
 
   const last = byKickoff.findLast((m) => tieWinner(m));
   if (!last) return null;
@@ -69,16 +70,20 @@ export function buildCup(data: CupData, now: Date) {
     awayGoals: m.awayGoals,
     homePenalties: m.homePenalties,
     awayPenalties: m.awayPenalties,
+    unconfirmed: tbd(m),
     winner: tieWinner(m),
   });
 
   const rounds: BracketRound[] = [];
   for (const label of new Set(byKickoff.map((m) => m.roundLabel))) {
     const ties = byKickoff.filter((m) => m.roundLabel === label);
+    const dated = ties.filter((m) => !tbd(m));
     rounds.push({
       key: label.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
       title: roundName(info(label)),
-      day: rangeLabel(ties[0].kickoff, ties.at(-1)!.kickoff),
+      day: dated.length
+        ? rangeLabel(dated[0].kickoff, dated.at(-1)!.kickoff)
+        : "Días y horarios a confirmar",
       ties: ties.map(view),
     });
   }
@@ -116,7 +121,9 @@ export function buildCup(data: CupData, now: Date) {
     next = `${nextPhrase[0].toUpperCase()}${nextPhrase.slice(1)} contra ${rival.name} ${postponed(nextPhrase)}.`;
   } else if (!isUpcoming(nextTie, now)) next = `Ya está en ${nextPhrase}, contra ${rival.name}.`;
   else if (nextTie.status === "live") next = `Está jugando ${nextPhrase} contra ${rival.name}.`;
-  else {
+  else if (tbd(nextTie)) {
+    next = `Enfrenta a ${rival.name} por ${nextPhrase}; todavía no tiene fecha confirmada.`;
+  } else {
     next = `El ${dayLabel(nextTie.kickoff)} enfrenta a ${rival.name} por ${nextPhrase}.`;
   }
 

@@ -28,9 +28,11 @@ function TieItem({ tie }: { tie: Tie }) {
   const when =
     tie.status === "postponed"
       ? "Postergado"
-      : tie.status === "scheduled" || tie.status === "live"
-        ? `${dayLabel(tie.kickoff)} a las ${timeLabel(tie.kickoff)}`
-        : null;
+      : tie.unconfirmed
+        ? "Día y horario a confirmar"
+        : tie.status === "scheduled" || tie.status === "live"
+          ? `${dayLabel(tie.kickoff)} a las ${timeLabel(tie.kickoff)}`
+          : null;
   return (
     <li className="border-t-2 border-soft">
       <Link href={`/partidos/${tie.id}`} className="grid gap-1.5 py-2.5 hover:underline">

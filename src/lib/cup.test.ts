@@ -108,6 +108,25 @@ describe("buildCup", () => {
     );
   });
 
+  it("gives no date for a next tie whose kickoff is the round's placeholder", () => {
+    const won = tie("Round of 16", 370969, 384585, [2, 1], 10);
+    const quarters = [
+      tie("Quarter-finals", 370969, 371820, null, 20),
+      tie("Quarter-finals", 384585, 407562, null, 20),
+      tie("Quarter-finals", 371820, 407562, null, 20),
+      tie("Quarter-finals", 407562, 384585, null, 20),
+    ];
+    const { hero, rounds } = build(data([won, ...quarters]))!;
+    expect(hero.summary).toBe(
+      "Le ganó a Boca Juniors 2-1 en los octavos de final. Enfrenta a Racing por los cuartos de final; todavía no tiene fecha confirmada.",
+    );
+    expect(rounds[1].day).toBe("Días y horarios a confirmar");
+    expect(rounds[1].ties.every((t) => t.unconfirmed)).toBe(true);
+    expect(build(data([won, ...quarters.slice(0, 3)]))!.hero.summary).toMatch(
+      /El viernes 20 de noviembre enfrenta a Racing/,
+    );
+  });
+
   it("tells a shoot-out from a win in regulation", () => {
     const { hero } = build(data([tie("Round of 16", 370969, 384585, [1, 1], 10, [2, 4])]))!;
     expect(hero.subject.name).toBe("Boca Juniors");

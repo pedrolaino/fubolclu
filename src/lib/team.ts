@@ -17,6 +17,7 @@ import {
   tieWinner,
   unplayed,
   isUpcoming,
+  unconfirmedKickoff,
   withArticle,
 } from "@/lib/results";
 import { positionHistory, scorers, zoneTable, type Row, type ScorerEvent } from "@/lib/standings";
@@ -149,6 +150,7 @@ export function buildTeam(
     .filter((m) => involves(m, teamId))
     .sort((a, b) => a.kickoff.getTime() - b.kickoff.getTime());
 
+  const tbd = unconfirmedKickoff(data.matches);
   const fixtures = mine.map((m): Fixture => {
     const home = m.homeTeamId === teamId;
     const played = m.status === "finished" && m.homeGoals !== null && m.awayGoals !== null;
@@ -156,8 +158,8 @@ export function buildTeam(
     return {
       id: m.id,
       status: m.status,
-      date: dateLabel(m.kickoff),
-      time: timeLabel(m.kickoff),
+      date: tbd(m) ? "A confirmar" : dateLabel(m.kickoff),
+      time: tbd(m) ? "" : timeLabel(m.kickoff),
       competition: competitionName(m),
       round: roundName(m),
       home,
@@ -205,7 +207,9 @@ export function buildTeam(
   if (next) {
     const home = next.homeTeamId === teamId;
     const rival = teams.get(home ? next.awayTeamId : next.homeTeamId)!.name;
-    sentence += ` El ${dayLabel(next.kickoff)} ${home ? "recibe a" : "visita a"} ${rival} por ${roundOf(next)}.`;
+    sentence += tbd(next)
+      ? ` ${home ? "Recibe a" : "Visita a"} ${rival} por ${roundOf(next)}; todavía no tiene fecha confirmada.`
+      : ` El ${dayLabel(next.kickoff)} ${home ? "recibe a" : "visita a"} ${rival} por ${roundOf(next)}.`;
   } else if (last) {
     const f = fixtures.find((f) => f.id === last.id)!;
     const [gf, ga] = f.home ? [f.homeGoals!, f.awayGoals!] : [f.awayGoals!, f.homeGoals!];
