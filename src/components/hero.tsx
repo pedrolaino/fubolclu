@@ -102,11 +102,12 @@ export function Hero({
                   size={190}
                   className="sticker-lg !size-[84px] wide:!size-[190px]"
                   shared
+                  eager
                 />
               ) : (
                 <>
-                  <Crest team={subject} size={84} className="sticker-lg wide:hidden" />
-                  <Crest team={subject} size={190} className="sticker-lg hidden wide:block" />
+                  <Crest team={subject} size={84} className="sticker-lg wide:hidden" eager />
+                  <Crest team={subject} size={190} className="sticker-lg hidden wide:block" eager />
                 </>
               )}
             </motion.div>
