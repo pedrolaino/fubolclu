@@ -1,0 +1,147 @@
+GATE: OPEN 18 (rounds used up)
+
+gate: checking http://localhost:3001/acerca (software); this takes a few minutes on a CPU Chrome
+gate: rounds used up; 18 FAIL open
+  FAIL cta              section#torneos "ELEGÍ TU TORNEO."  [1440, 390]
+       the last section before the footer ends with no button
+       fix: add the action: a button in the hero, one on every priced item, one in the closing section
+  FAIL copy-headings    h2#tables-title "CADA PUNTO TIENE CONSECUENCIAS."  [1440]
+       "CADA PUNTO TIENE CONSECUENCIAS." names no product, part, place or section (8 headings like it; at most one brand line per page) (and 7 more like it: "LA ANUAL Y LOS PROMEDIOS", "LOS DATOS TAMBIÉN TIENEN", "Priorizar las
+       fix: name the thing in every heading: the product, a part, the place or a section noun
+  FAIL heading-scale    div.fc-wrap > div.fc-featureGrid > article.fc-feature:nth-of-type(1) > h3.display "LA ANUA  [1440, 390]
+       h3 headings in 2 sizes, 22px ("Priorizar las consultas") to 32px (x1.45)
+       fix: size headings by level: the h1 largest, one size per level, each level below the one above
+  FAIL off-grid         footer.mx-auto.px-4 > div.flex.flex-wrap > a.display "FUBOLCLU"  [1440, 390]
+       left edge at 136px, 16px off the page margin at 120px (18 elements, like span.display)
+       fix: move it onto the page margin, or the column edge its section uses
+  FAIL text-contrast    section.fc-hero.hero > div.fc-wrap > div.fc-heroFoot > span "Del resultado a la tabla. De   [1440]
+       body text in #666666 on #ffffff reads 5.74:1 (needs 7:1); 2 like it, like "Un proyecto sobre el f"
+       fix: body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels
+  FAIL hero-screen      section.fc-hero.hero > div.fc-wrap > div.fc-heroFoot > a "Conocé el proyecto ↓"  [1440]
+       "Conocé el proyecto ↓" ends at 880px, below the hero's content line at 876px (the 900px screen less 24px) (SR-1)
+       fix: keep the hero's content between the nav and 24px above the fold (and the action bar): shorten the picture or the text; a docked strip 96px at most
+  FAIL section-height   footer.mx-auto.px-4 "FubolCluDatos de Highlightly. Escudos de"  [1440]
+       the section is 90px tall (0.1 screens), 810px short of one screen (900px): every section after the hero is one screen or two, 2px either way (SR-2)
+       fix: set the section to one screen or two (height: calc(var(--h,1) * 100vh), --h 1 or 2) and cut or split its content to fit
+  FAIL section-air      section#datos > div.fc-wrap > div.fc-codeLine "Next.js · TypeScript · Drizzle · Postgre"  [1440]
+       a top border across 100% of the container, between the section's content: sections and their parts are told apart by air and ground, not lines (SR-3)
+       fix: take the rule out: sections and their parts are parted by their ground and the air between them
+  FAIL one-section      footer.mx-auto.px-4 "FubolCluDatos de Highlightly. Escudos de"  [1440]
+       the screen at scroll 2790px (the top of section 5) shows 90px of section 5 and the content of 2 sections, over 24px each beside section 4: a screen shows one section (another may peek 8px, 24px WARN) (SR-4)
+       fix: make each section exactly one screen or two, so a screen shows one section and no neighbour peeks
+  FAIL container-edges  footer.mx-auto.px-4 "FubolCluDatos de Highlightly. Escudos de"  [1440]
+       the content of section 5 runs 136px from the left and 136px from the right (read from its outermost blocks: no .wrap): the page's container starts at 120px; the margin is 64-120px at 1440px (one container, equal margins,
+       fix: use one container on every section and the nav (.wrap): one margin left and right, 64-120px on a desktop, 16-24px on a phone
+  FAIL container-edges  div.fc-landing "Saltar al contenidoFubolCluLas tablasLos"  [1440]
+       a <div> at the top of the page, outside header.nav, main, footer.closing and nav.actionbar (SR-6)
+       fix: build the page as header.nav, a main of sections (each one in-flow .wrap plus background layers) and footer.closing
+  FAIL container-edges  main#contenido > section.fc-hero.hero "3 torneos. Tablas, fixture y goleadores."  [1440]
+       the section needs exactly one in-flow child .wrap (it has 1 in-flow child, 0 .wrap) (and 4 more like it: "Cada puntotiene consecue", "Los datos tambiéntienen ", "Elegí tu torneo.De la pr") (SR-6)
+       fix: build the page as header.nav, a main of sections (each one in-flow .wrap plus background layers) and footer.closing
+  FAIL split-pair       section#datos > div.fc-wrap > div.fc-budgetGrid "90/ 100Tope diario de sincronización.10 "  [1440]
+       the split's columns are off the page's one pair of lines: its right column starts at x 768, the first split's at 656; its right column starts at x 768, on none of the split lines 630 (k=5), 732 (k=6), 834 (k=7) (SR-8)
+       fix: start every split's right column on one shared line (wrap.left + k x (width + 24) / 12, k 5, 6 or 7; 6 on a place page) and end the left one 24px before it
+  FAIL split-pair       main#contenido > section.fc-hero.hero > div.fc-wrap > div.fc-heroGrid "El fútbol argentino  [1440]
+       the split's columns are off the page's one pair of lines: its right column starts at x 656, on none of the split lines 630 (k=5), 732 (k=6), 834 (k=7) (SR-8)
+       fix: start every split's right column on one shared line (wrap.left + k x (width + 24) / 12, k 5, 6 or 7; 6 on a place page) and end the left one 24px before it
+  FAIL split-pair       section#tablas > div.fc-wrap > div.fc-sectionHead "Cada puntotiene consecuencias.FubolClu   [1440]
+       the split's columns are off the page's one pair of lines: its right column starts at x 840, the first split's at 656; its right column starts at x 840, on none of the split lines 630 (k=5), 732 (k=6), 834 (k=7) (and 1 mo
+       fix: start every split's right column on one shared line (wrap.left + k x (width + 24) / 12, k 5, 6 or 7; 6 on a place page) and end the left one 24px before it
+  FAIL split-pair       section#datos > div.fc-wrap > div.fc-sectionHead "Los datos tambiéntienen un límite.Highli  [1440]
+       the split does not run edge to edge on the container: its right column ends at 1206px, the container's right at 1320px (SR-8)
+       fix: run the split from the container's left line to its right line
+  FAIL text-contrast    section#torneos > div.fc-wrap > div.fc-closing > p "Un proyecto sobre el fútbol argentino.  [390]
+       body text in #666666 on #ffffff reads 5.74:1 (needs 7:1)
+       fix: body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels
+  FAIL container        page  [1440, 390]
+       no .wrap
+       fix: put the content in one .wrap
+  WAIVED placeholder div.fc-competitionList > a.fc-competition:nth-of-type(4) > div > h3.display "CÓM: Cómo se define todo is the existing Spanish section name requested by the user; todo means everything and is not a TODO placeholder.
+  WAIVED hero-enter main#contenido > section.fc-hero.hero: The route uses its own reduced-motion-aware CSS entrance on fc-heroCopy. It does not use the kit global html.m-enter marker to keep the existing application isolated.
+  11 WARN (not blocking), first: no-visual section#datos "LOS DATOS TAMBIÉN TIENEN ; copy-buttons div.fc-landing > header.fc-nav > div.fc-; copy-actions (the page); off-grid div.fc-pipeline > div:nth-of-type(1) > d; section-gaps main#contenido > section.fc-hero.hero /
+Stop fixing: put these open FAILs and the waivers in your report, then finish.
+GATE: OPEN 18 (rounds used up)
+
+
+Todos los WARN del checker (sin duplicados):
+
+no-visual [1440] section#datos: pictures, effects and mocks cover 21% of this section; a feature section needs a visual (about 25% or more)
+
+copy-buttons [1440] div.fc-landing > header.fc-nav > div.fc-wrap > a.fc-skip: "Saltar al contenido" does not start with a verb (book, buy, try, start, get, see...)
+
+copy-actions [1440] (the page): the main action "Ver el fútbol" does not read word for word the same in the closing section
+
+off-grid [1440] div.fc-pipeline > div:nth-of-type(1) > div > h3: left edge at 804.5px, 3.5px off a common edge of its section at 808px (4 elements, like h3); 1 more in this section off the grid too (p at 804.5px)
+
+section-gaps [1440] main#contenido > section.fc-hero.hero / section#tablas: 121px between these sections, -29% against the median 171px of gaps at a change of ground
+
+section-gaps [1440] section#tablas / section#datos: 221px between these sections, +29% against the median 171px of gaps at a change of ground
+
+section-gaps [1440] main#contenido > section.fc-hero.hero / section#tablas: uneven space at the edge of a band: 34px outside its edge, 87px inside it (the space on either side of a change of ground reads as one gap only when the two match)
+
+nav-labels [1440] header.fc-nav > div.fc-wrap > nav.fc-navLinks > a:nth-of-type(1): "Las tablas" opens a section headed "CADA PUNTO TIENE CONSECUENCIAS."
+
+progress-bar [1440] div.fc-wrap > div.fc-budgetGrid > div.fc-budget > div.fc-meter: a progress or meter bar on the page, like the one in "90 / 100 Tope diario de sincro": the house rules have no drag or progress bars
+
+hero-enter [1440] main#contenido > section.fc-hero.hero: the hero does not enter on load: no head line setting html.m-enter (motion.md, The hero's entrance)
+
+share-meta [1440] head: the head lacks theme-color: a shared link shows no picture or title of its own
+
+one-heading [1440] h2#competitions-title: headings of two sections show whole on one screen at 6 of 56 scroll positions (10.7%; at scroll 2000, 2050, 2100, 2150px), here with "90": at most 3% on a desktop (it is in a scroll scene: told as a WARN) (SR-5)
+
+tap-size [390] footer.mx-auto.px-4 > div.flex.flex-wrap > a.display: a 114x28px tap target: under the 44px a phone needs
+
+no-visual [390] section#datos: pictures, effects and mocks cover 23% of this section; a feature section needs a visual (about 25% or more)
+
+off-grid [390] div.fc-pipeline > div:nth-of-type(1) > div > h3: left edge at 56.5px, 3.5px off a common edge of its section at 60px (4 elements, like h3); 1 more in this section off the grid too (p at 56.5px)
+
+
+Detalle de los FAIL del checker por viewport (antes de aplicar excepciones):
+
+placeholder [1440] div.fc-competitionList > a.fc-competition:nth-of-type(4) > div > h3.display: "TODO" is a placeholder left on the page
+
+cta [1440] section#torneos: the last section before the footer ends with no button
+
+copy-headings [1440] h2#tables-title: "CADA PUNTO TIENE CONSECUENCIAS." names no product, part, place or section (8 headings like it; at most one brand line per page) (and 7 more like it: "LA ANUAL Y LOS PROMEDIOS", "LOS DATOS TAMBIÉN TIENEN", "Priorizar las consultas", "Guardar en Postgres", ...)
+
+heading-scale [1440] div.fc-wrap > div.fc-featureGrid > article.fc-feature:nth-of-type(1) > h3.display: h3 headings in 2 sizes, 22px ("Priorizar las consultas") to 32px (x1.45)
+
+off-grid [1440] footer.mx-auto.px-4 > div.flex.flex-wrap > a.display: left edge at 136px, 16px off the page margin at 120px (18 elements, like span.display)
+
+text-contrast [1440] section.fc-hero.hero > div.fc-wrap > div.fc-heroFoot > span: body text in #666666 on #ffffff reads 5.74:1 (needs 7:1); 2 like it, like "Un proyecto sobre el f"
+
+hero-screen [1440] section.fc-hero.hero > div.fc-wrap > div.fc-heroFoot > a: "Conocé el proyecto ↓" ends at 880px, below the hero's content line at 876px (the 900px screen less 24px) (SR-1)
+
+section-height [1440] footer.mx-auto.px-4: the section is 90px tall (0.1 screens), 810px short of one screen (900px): every section after the hero is one screen or two, 2px either way (SR-2)
+
+section-height [1440] footer.mx-auto.px-4: the section's content does not fit it: its lowest content ends 54px below its top, past 18px (the section less 72px of bottom padding) (SR-2)
+
+section-air [1440] section#datos > div.fc-wrap > div.fc-codeLine: a top border across 100% of the container, between the section's content: sections and their parts are told apart by air and ground, not lines (SR-3)
+
+one-section [1440] footer.mx-auto.px-4: the screen at scroll 2790px (the top of section 5) shows 90px of section 5 and the content of 2 sections, over 24px each beside section 4: a screen shows one section (another may peek 8px, 24px WARN) (SR-4)
+
+container-edges [1440] footer.mx-auto.px-4: the content of section 5 runs 136px from the left and 136px from the right (read from its outermost blocks: no .wrap): the page's container starts at 120px; the margin is 64-120px at 1440px (one container, equal margins, 2px either way) (SR-6)
+
+container-edges [1440] div.fc-landing: a <div> at the top of the page, outside header.nav, main, footer.closing and nav.actionbar (SR-6)
+
+container-edges [1440] footer.mx-auto.px-4: a <footer> at the top of the page, outside header.nav, main, footer.closing and nav.actionbar (SR-6)
+
+container-edges [1440] main#contenido > section.fc-hero.hero: the section needs exactly one in-flow child .wrap (it has 1 in-flow child, 0 .wrap) (and 4 more like it: "Cada puntotiene consecue", "Los datos tambiéntienen ", "Elegí tu torneo.De la pr") (SR-6)
+
+split-pair [1440] section#datos > div.fc-wrap > div.fc-budgetGrid: the split's columns are off the page's one pair of lines: its right column starts at x 768, the first split's at 656; its right column starts at x 768, on none of the split lines 630 (k=5), 732 (k=6), 834 (k=7) (SR-8)
+
+split-pair [1440] main#contenido > section.fc-hero.hero > div.fc-wrap > div.fc-heroGrid: the split's columns are off the page's one pair of lines: its right column starts at x 656, on none of the split lines 630 (k=5), 732 (k=6), 834 (k=7) (SR-8)
+
+split-pair [1440] section#tablas > div.fc-wrap > div.fc-sectionHead: the split's columns are off the page's one pair of lines: its right column starts at x 840, the first split's at 656; its right column starts at x 840, on none of the split lines 630 (k=5), 732 (k=6), 834 (k=7) (and 1 more like it: "Los datos tambiéntienen ") (SR-8)
+
+split-pair [1440] section#tablas > div.fc-wrap > div.fc-sectionHead: the split does not run edge to edge on the container: its right column ends at 1206px, the container's right at 1320px (SR-8)
+
+split-pair [1440] section#datos > div.fc-wrap > div.fc-sectionHead: the split does not run edge to edge on the container: its right column ends at 1206px, the container's right at 1320px (SR-8)
+
+cta [390] section#torneos: the last section before the footer ends with no button
+
+heading-scale [390] div.fc-wrap > div.fc-featureGrid > article.fc-feature:nth-of-type(1) > h3.display: h3 headings in 2 sizes, 22px ("Priorizar las consultas") to 30px (x1.36)
+
+off-grid [390] footer.mx-auto.px-4 > div.flex.flex-wrap > a.display: left edge at 16px, 4px off the page margin at 20px (38 elements, like p); 1 more in this section off the grid too (p at 16px)
+
+text-contrast [390] section#torneos > div.fc-wrap > div.fc-closing > p: body text in #666666 on #ffffff reads 5.74:1 (needs 7:1)
