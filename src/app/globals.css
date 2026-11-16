@@ -59,3 +59,17 @@ body {
   filter: drop-shadow(6px 0 0 #fff) drop-shadow(-6px 0 0 #fff) drop-shadow(0 6px 0 #fff)
     drop-shadow(0 -6px 0 #fff) drop-shadow(0 6px 0 rgb(0 0 0 / 0.22));
 }
+
+/* Only the crest morphs between pages; the page itself doesn't crossfade. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 0s !important;
+  }
+}

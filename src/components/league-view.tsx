@@ -26,7 +26,7 @@ function TeamCell({ team, children }: { team: TeamView; children?: React.ReactNo
         href={`/equipos/${team.slug}`}
         className="inline-flex items-center gap-3 hover:underline"
       >
-        <Crest team={team} size={34} />
+        <Crest team={team} size={34} shared={!children} />
         {children ?? team.name}
       </Link>
     </td>
