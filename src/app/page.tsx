@@ -4,6 +4,7 @@ import {
   h2,
   MatchDays,
   SeasonStrip,
+  SectionIndex,
   TopScorers,
   ZoneLeader,
   ZoneTable,
@@ -53,7 +54,8 @@ export default async function Home() {
     <div style={paintStyle(hero.subject)}>
       <Hero subject={hero.subject} title={hero.title} summary={hero.summary} />
       <main className="mx-auto max-w-[1200px] px-4 pt-9 pb-20">
-        <div className="grid gap-14 wide:grid-cols-[minmax(0,1fr)_340px]">
+        <SectionIndex />
+        <div className="mt-16 grid gap-14 wide:mt-20 wide:grid-cols-[minmax(0,1fr)_340px]">
           <MatchDays
             title="Lo que viene"
             side={front.upcoming}

@@ -8,6 +8,34 @@ import { Crest } from "./crest";
 export const h2 = "display text-[44px] wide:text-[56px]";
 const h3 = "display text-[30px] wide:text-[34px]";
 
+const sections = [
+  ["/liga-profesional", "Liga Profesional", "Zonas, tabla anual, promedios y goleadores"],
+  ["/primera-nacional", "Primera Nacional", "Las dos zonas y el Reducido"],
+  ["/copa-argentina", "Copa Argentina", "El cuadro, ronda por ronda"],
+  ["/como-se-define", "Cómo se define todo", "Campeones, Libertadores y descensos"],
+];
+
+// What the site is and where to go, right under the hero.
+export function SectionIndex() {
+  return (
+    <nav aria-label="Secciones" className="border-t-[6px] border-ink pt-4 wide:mt-14">
+      <p className="text-lg font-medium">Tablas, fixture y goleadores del fútbol argentino.</p>
+      <ul className="mt-6 grid grid-cols-2 gap-x-6 gap-y-8 wide:grid-cols-4 wide:gap-x-8">
+        {sections.map(([href, name, about]) => (
+          <li key={href}>
+            <Link href={href} className="group block">
+              <span className="display block text-[28px] group-hover:underline wide:text-[30px]">
+                {name}
+              </span>
+              <span className="mt-2 block text-[15px] text-mute">{about}</span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+}
+
 function Score({ m }: { m: FrontMatch }) {
   if (m.status === "postponed" || m.status === "cancelled") {
     return (
@@ -17,7 +45,11 @@ function Score({ m }: { m: FrontMatch }) {
     );
   }
   if (m.homeGoals === null || m.awayGoals === null) {
-    return <span className="figures text-center text-[17px] text-mute">{m.time}</span>;
+    return (
+      <span className="figures text-center text-[17px] text-mute">
+        {m.unconfirmed ? "vs" : m.time}
+      </span>
+    );
   }
   return (
     <span className="figures text-center text-xl">
