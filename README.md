@@ -2,6 +2,8 @@
 
 Standings, fixtures and scorers for Argentine football: Liga Profesional, Primera Nacional and Copa Argentina.
 
+Live at [fubolclu.vercel.app](https://fubolclu.vercel.app).
+
 ![Home page](docs/home.png)
 
 Every page takes the colours of one team: whoever tops the table you're looking at, the club on a team page, the home side on a match page. Along with the zone tables it works out the annual table and the relegation averages, which the data provider doesn't have, and one page lists who currently holds each title, Libertadores place and relegation spot.
