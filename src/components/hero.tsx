@@ -60,7 +60,7 @@ export function Hero({
             href="/"
             className="display mr-3 basis-full pt-4 pb-1 text-[30px] wide:basis-auto wide:p-0"
           >
-            FubolClu
+            FubolClú
           </Link>
           <div className="flex h-11 w-full justify-between wide:contents">
             {links.map(([href, label, short]) => (

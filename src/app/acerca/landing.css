@@ -1,0 +1,317 @@
+.fc-landing {
+  background: #fff;
+  --fc-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.fc-landing :focus-visible {
+  outline: 2px solid #000;
+  outline-offset: 4px;
+}
+.fc-wrap {
+  width: min(100% - 96px, 1200px);
+  margin-inline: auto;
+}
+.fc-arrow {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  transition: transform 150ms var(--fc-ease);
+}
+.fc-nav > .fc-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  min-height: 88px;
+  border-bottom: 1px solid #ddd;
+}
+.fc-wordmark {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 36px;
+  margin-right: auto;
+}
+.fc-navGuide,
+.fc-navAction {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 15px;
+  gap: 24px;
+}
+.fc-navGuide:hover {
+  text-decoration: underline;
+  text-underline-offset: 6px;
+}
+.fc-skip {
+  position: absolute;
+  top: 16px;
+  left: 0;
+  z-index: 10;
+  padding: 12px;
+  color: #fff;
+  background: #000;
+  transform: translateY(-200%);
+}
+.fc-skip:focus {
+  transform: none;
+}
+.fc-hero {
+  padding-block: 72px 88px;
+}
+.fc-heroGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: 64px;
+  align-items: center;
+}
+.fc-heroCopy h1 {
+  font-size: clamp(80px, 8vw, 128px);
+  line-height: 0.94;
+  letter-spacing: -0.025em;
+}
+.fc-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 48px;
+  min-height: 56px;
+  margin-top: 40px;
+  padding: 16px 24px;
+  color: #fff;
+  background: #000;
+  font-size: 16px;
+  transition:
+    transform 150ms var(--fc-ease),
+    background 150ms var(--fc-ease);
+}
+.fc-button:hover {
+  background: #292929;
+  transform: translateY(-1px);
+}
+.fc-button:active {
+  transform: translateY(1px);
+}
+.fc-button:focus-visible {
+  outline-color: #000;
+}
+.fc-appFrame {
+  display: block;
+  height: 520px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+  box-shadow: 0 24px 64px -32px #0004;
+  transition: transform 180ms var(--fc-ease);
+}
+.fc-appFrame:hover {
+  transform: translateY(-2px);
+}
+.fc-appFrame img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.fc-guide {
+  padding-block: 72px;
+  background: #f1f1ee;
+  scroll-margin-top: 24px;
+}
+.fc-guide h2 {
+  font-size: 64px;
+  line-height: 1;
+}
+.fc-tour {
+  margin-top: 40px;
+}
+.fc-tourHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+.fc-tourTabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.fc-tourTabs button {
+  min-height: 48px;
+  padding: 10px 20px;
+  border: 1px solid transparent;
+  font-size: 17px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 150ms var(--fc-ease);
+}
+.fc-tourTabs button[aria-selected="true"] {
+  background: #000;
+  color: #fff;
+}
+.fc-tourTabs button:hover:not([aria-selected="true"]) {
+  background: #e2e2df;
+}
+.fc-tourAction {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 44px;
+  font-size: 15px;
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
+.fc-tourScreen {
+  display: block;
+  overflow: hidden;
+  border: 1px solid #d1d1cc;
+  background: #fff;
+}
+.fc-guideImage {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  object-position: top;
+}
+.fc-competitions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 32px;
+  margin-top: 48px;
+}
+.fc-competitions a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 64px;
+  border-top: 2px solid #000;
+  padding-top: 16px;
+}
+.fc-competitions .display {
+  font-size: 30px;
+  line-height: 1;
+}
+.fc-competitions a:hover .fc-arrow,
+.fc-navAction:hover .fc-arrow,
+.fc-button:hover .fc-arrow {
+  transform: translateX(3px);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .fc-heroCopy {
+    animation: fc-arrive 600ms var(--fc-ease) both;
+  }
+  @keyframes fc-arrive {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
+@media (max-width: 1023px) {
+  .fc-wrap {
+    width: calc(100% - 64px);
+  }
+  .fc-heroGrid {
+    gap: 40px;
+  }
+  .fc-appFrame {
+    height: 420px;
+  }
+  .fc-heroCopy h1 {
+    font-size: clamp(66px, 8.5vw, 100px);
+  }
+  .fc-competitions {
+    gap: 24px;
+  }
+  .fc-competitions .display {
+    font-size: 26px;
+  }
+}
+@media (max-width: 767px) {
+  .fc-wrap {
+    width: calc(100% - 40px);
+  }
+  .fc-nav > .fc-wrap {
+    min-height: 72px;
+    gap: 24px;
+  }
+  .fc-wordmark {
+    font-size: 30px;
+  }
+  .fc-navGuide {
+    display: none;
+  }
+  .fc-hero {
+    padding-block: 40px 48px;
+  }
+  .fc-heroGrid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .fc-heroCopy h1 {
+    font-size: clamp(66px, 18vw, 110px);
+  }
+  .fc-button {
+    width: 100%;
+    margin-top: 28px;
+  }
+  .fc-appFrame {
+    height: 300px;
+  }
+  .fc-guide {
+    padding-block: 48px;
+  }
+  .fc-guide h2 {
+    font-size: 48px;
+  }
+  .fc-tour {
+    margin-top: 24px;
+  }
+  .fc-tourHead {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .fc-tourTabs {
+    width: 100%;
+    gap: 0;
+  }
+  .fc-tourTabs button {
+    padding-inline: 14px;
+    font-size: 16px;
+    flex: 1;
+  }
+  .fc-tourAction {
+    font-size: 15px;
+  }
+  .fc-competitions {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-top: 32px;
+  }
+  .fc-competitions a {
+    min-height: 60px;
+    padding-top: 12px;
+  }
+  .fc-competitions .display {
+    font-size: 30px;
+  }
+}
+@media (max-width: 639px) {
+  .fc-guideImage {
+    aspect-ratio: 390 / 520;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fc-landing *,
+  .fc-landing *::before,
+  .fc-landing *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
