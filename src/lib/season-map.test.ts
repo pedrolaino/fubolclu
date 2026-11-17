@@ -142,11 +142,11 @@ describe("buildSeasonMap", () => {
     expect(seat(pending, "descenso-anual").state).toBe("today");
   });
 
-  it("flags the same team going down by both tables", () => {
-    expect(names(seat(map, "descenso-anual").entries)).toEqual(["Foxtrot"]);
+  it("sends the next-to-last of the annual table down when the last also has the worst average", () => {
     expect(names(seat(map, "descenso-promedio").entries)).toEqual(["Foxtrot"]);
+    expect(names(seat(map, "descenso-anual").entries)).toEqual(["Delta"]);
     expect(map.notes).toEqual([
-      "Foxtrot está último en la tabla anual y también tiene el peor promedio, así que ocupa un solo lugar de descenso.",
+      "Foxtrot está último en la tabla anual y también tiene el peor promedio. Baja por el promedio y el lugar de la tabla anual pasa al anteúltimo, Delta.",
     ]);
   });
 
@@ -256,8 +256,9 @@ describe("describeTeam", () => {
     expect(describeTeam(map, 2)).toBe(
       "Bravo ya está en la Libertadores 2027 como campeón del Apertura, va al Trofeo de Campeones y sigue vivo en el Clausura.",
     );
-    expect(describeTeam(map, 6)).toBe(
-      "Foxtrot desciende a la Primera Nacional: es el último de la tabla anual y también tiene el peor promedio.",
+    expect(describeTeam(map, 6)).toBe("Foxtrot desciende a la Primera Nacional por el promedio.");
+    expect(describeTeam(map, 4)).toBe(
+      "Delta desciende a la Primera Nacional por la tabla anual y sigue vivo en el Clausura, que da lugar en la Libertadores 2027.",
     );
   });
 
@@ -268,13 +269,13 @@ describe("describeTeam", () => {
       [cup[0], knockout(4, 5, [1, 0], "Semi-finals", { tournament: null })],
     );
     expect(describeTeam(delta, 4)).toBe(
-      "Delta sigue vivo en el Clausura y en la Copa Argentina, que dan lugar en la Libertadores 2027.",
+      "Delta desciende a la Primera Nacional por la tabla anual y sigue vivo en el Clausura y en la Copa Argentina, que dan lugar en la Libertadores 2027.",
     );
   });
 
   it("says when a team is in no seat", () => {
-    expect(describeTeam(build(leagueMatches), 4)).toBe(
-      "Delta no está en ninguna plaza por ahora: ni de Libertadores ni de descenso.",
+    expect(describeTeam(build(leagueMatches), 3)).toBe(
+      "Charly no está en ninguna plaza por ahora: ni de Libertadores ni de descenso.",
     );
   });
 });

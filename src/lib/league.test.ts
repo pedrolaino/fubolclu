@@ -164,6 +164,24 @@ describe("buildLeague", () => {
     );
   });
 
+  it("moves the annual relegation line up when the last also has the worst average", () => {
+    const small = { ...config, annual: { libertadores: 1, relegated: 1 } };
+    const annualOf = (history: LeagueData["history"]) => {
+      const tab = buildLeague(data(played, { history }), small, now).tabs[2];
+      if (tab.kind !== "table") throw new Error("annual tab expected");
+      return tab;
+    };
+    const plain = annualOf([]);
+    const last = plain.rows.at(-1)!.team.id;
+    const other = plain.rows[0].team.id;
+    const bad = (teamId: number) => [{ teamId, played: 64, points: 0 }];
+
+    expect(annualOf(bad(other)).lines).toEqual([1, 3]);
+    const both = annualOf(bad(last));
+    expect(both.lines).toEqual([1, 2]);
+    expect(both.notes[1]).toMatch(/por la tabla anual baja el anteúltimo/);
+  });
+
   it("keeps a zone open while a match of its teams is postponed", () => {
     const postponed = { ...match(370969, 371820, null, 9), status: "postponed" as const };
     const { tabs } = buildLeague(data([...played, postponed]), config, now);

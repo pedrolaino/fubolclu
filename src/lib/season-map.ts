@@ -186,10 +186,17 @@ export function buildSeasonMap(
   const annualTable = tableState(rows, leagueMatches);
   const annualStarted = annualTable !== "unstarted";
   const annualOver = annualTable === "over";
-  const lastRows = annualStarted ? rows.slice(-config.annual.relegated).reverse() : [];
   // Teams without games have no average and can't be the worst.
   const rankedAverages = averageRows.filter((r) => r.played > 0);
   const worstAverages = rankedAverages.slice(-(config.averages?.relegated ?? 0)).reverse();
+  const downByAverage = (id: number) => worstAverages.some((w) => w.team.id === id);
+  // A team last in both goes down by the average; its annual place passes up the table.
+  const lastRows = annualStarted
+    ? rows
+        .filter((r) => !downByAverage(r.team.id))
+        .slice(-config.annual.relegated)
+        .reverse()
+    : [];
   const annualState: State = !annualStarted ? "open" : annualOver ? "decided" : "today";
   const averagesState: State = !rankedAverages.length ? "open" : annualOver ? "decided" : "today";
   const top = config.zoneLines?.find((l) => "top" in l);
@@ -338,7 +345,7 @@ export function buildSeasonMap(
       name: "Desciende por la tabla anual",
       source: "anual",
       state: annualState,
-      line: "El último de la tabla anual baja a la Primera Nacional.",
+      line: "El último de la tabla anual baja a la Primera Nacional. Si también tiene el peor promedio, baja el anteúltimo.",
       then: "",
       entries: lastRows.map((r) => annualEntry(r)),
     },
@@ -360,11 +367,13 @@ export function buildSeasonMap(
       : []),
   ];
 
-  const relegatedBoth = lastRows.filter((r) => worstAverages.some((w) => w.team.id === r.team.id));
-  const notes = relegatedBoth.map(
-    (r) =>
-      `${r.team.name} está último en la tabla anual y también tiene el peor promedio, así que ocupa un solo lugar de descenso.`,
-  );
+  const bottom = rows.at(-1);
+  const notes =
+    annualStarted && bottom && downByAverage(bottom.team.id) && lastRows[0]
+      ? [
+          `${bottom.team.name} está último en la tabla anual y también tiene el peor promedio. Baja por el promedio y el lugar de la tabla anual pasa al anteúltimo, ${lastRows[0].team.name}.`,
+        ]
+      : [];
 
   const champion = (key: Contest) => {
     const id = brackets[key].champion;
@@ -523,9 +532,7 @@ export function describeTeam(map: SeasonMap, teamId: number) {
     const done = state(byAnnual ? "descenso-anual" : "descenso-promedio") === "decided";
     const verb = done ? "desciende" : "descendería";
     clauses.push(
-      byAnnual && byAverage
-        ? `${verb} a la Primera Nacional: es el último de la tabla anual y también tiene el peor promedio`
-        : `${verb} a la Primera Nacional por ${byAnnual ? "la tabla anual" : "el promedio"}`,
+      `${verb} a la Primera Nacional por ${byAnnual ? "la tabla anual" : "el promedio"}`,
     );
   }
   if (map.trofeo?.teams.some((t) => t?.id === teamId)) clauses.push("va al Trofeo de Campeones");

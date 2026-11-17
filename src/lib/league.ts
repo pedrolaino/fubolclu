@@ -220,8 +220,20 @@ export function buildLeague(data: LeagueData, config: CompetitionSeason, now: Da
   const annual = annualTable(league, everyone);
   const annualState = tableState(annual, league);
 
+  const seasons = [
+    ...data.history,
+    ...annual.map(({ teamId, played, points }) => ({ teamId, played, points })),
+  ];
+  const averages = averagesTable(seasons, everyone);
+  // Teams without games have no average; they come last and can't be the worst.
+  const ranked = averages.filter((r) => r.played > 0);
+
   if (config.annual && annual.length) {
-    const { libertadores, relegated } = config.annual;
+    const { libertadores } = config.annual;
+    // Whoever goes down by the average leaves its annual place to the next one up.
+    const worst = new Set(ranked.slice(-(config.averages?.relegated ?? 0)).map((r) => r.teamId));
+    const kept = annual.filter((r) => !worst.has(r.teamId));
+    const relegatedFrom = annual.indexOf(kept[kept.length - config.annual.relegated]);
     const first = annual[0];
     const points = plural(first.points, "punto", "puntos");
     tabs.push({
@@ -237,22 +249,18 @@ export function buildLeague(data: LeagueData, config: CompetitionSeason, now: Da
             ? `Terminó primero en la tabla anual con ${points} y es Campeón de Liga.`
             : `Lidera la tabla anual con ${points} en ${plural(first.played, "partido", "partidos")}. Quien termine primero es Campeón de Liga.`,
       rows: toRows(annual, league),
-      lines: [libertadores, annual.length - relegated].filter((n) => n > 0 && n < annual.length),
+      lines: [libertadores, relegatedFrom].filter((n) => n > 0 && n < annual.length),
       notes: [
         `Los ${libertadores} mejores que no salgan campeones van a la Copa Libertadores.`,
-        `Debajo de la última línea, el que desciende a la Primera Nacional.`,
+        relegatedFrom < annual.length - config.annual.relegated
+          ? "Debajo de la última línea, los que descienden a la Primera Nacional: el último también tiene el peor promedio, así que por la tabla anual baja el anteúltimo."
+          : "Debajo de la última línea, el que desciende a la Primera Nacional.",
       ],
     });
   }
 
   if (config.averages && annual.length) {
-    const seasons = [
-      ...data.history,
-      ...annual.map(({ teamId, played, points }) => ({ teamId, played, points })),
-    ];
-    const rows = averagesTable(seasons, everyone);
-    // Teams without games have no average; they come last and can't be the worst.
-    const ranked = rows.filter((r) => r.played > 0);
+    const rows = averages;
     const last = ranked.at(-1) ?? rows[0];
     const average = last.average.toFixed(3).replace(".", ",");
     tabs.push({
