@@ -1,6 +1,8 @@
 name: Sync
 
 on:
+  schedule:
+    - cron: "*/30 * * * *"
   workflow_dispatch:
 
 concurrency:

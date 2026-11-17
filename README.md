@@ -14,7 +14,7 @@ Next.js 16 (App Router), TypeScript, Tailwind, Drizzle on Postgres, Motion. Vite
 
 ## How the data works
 
-Data comes from [Highlightly](https://highlightly.net). Its free plan allows 100 requests a day, so the site never calls it. A script (`pnpm sync`), run from GitHub Actions, decides which calls are worth making and writes the results to Postgres. Pages only read the database.
+Data comes from [Highlightly](https://highlightly.net). Its free plan allows 100 requests a day, so the site never calls it. A script (`pnpm sync`), run every 30 minutes from GitHub Actions, decides which calls are worth making and writes the results to Postgres. Pages only read the database.
 
 The sync counts its requests per day and stops at 90. Match lists and standings are refreshed once a day, a match in play costs one page of the list, and whatever is left of the budget goes to match details (goals, cards, stats), newest first. A season is about 1,200 matches, so a new database takes around two weeks to fill in the details.
 
