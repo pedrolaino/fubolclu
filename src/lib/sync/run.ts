@@ -1,5 +1,9 @@
 import { currentSeason } from "@/config/seasons";
+import { sportsDbLeagues } from "@/config/sports-db";
+import type { Competition } from "@/db/schema";
 import { PAGE_SIZE, type FootballProvider } from "@/lib/provider";
+import { roundEvents } from "@/lib/provider/sportsdb";
+import { confirmedKickoffs } from "./kickoffs";
 import { detailFailedKey, plan, type Call } from "./plan";
 import {
   closeStaleRuns,
@@ -10,8 +14,10 @@ import {
   replaceStandings,
   requestsOn,
   saveDetail,
+  setKickoffs,
   setStamp,
   startRun,
+  upcomingMatches,
   upsertMatchPage,
 } from "./store";
 
@@ -100,4 +106,19 @@ export async function sync(provider: FootballProvider, { dryRun = false } = {}) 
   }
   if (failures.length) await finishRun(runId, made, failures.join("\n"), "partial");
   else await finishRun(runId, made);
+}
+
+async function sportsDbRound(competition: Competition, round: number) {
+  // The free key allows 30 requests a minute.
+  await new Promise((resolve) => setTimeout(resolve, 2100));
+  return roundEvents(sportsDbLeagues[competition], currentSeason.season, round);
+}
+
+// Kickoff times from TheSportsDB. It has no daily quota, so this runs every time.
+export async function syncKickoffs() {
+  const now = new Date();
+  const upcoming = await upcomingMatches(currentSeason.season, now);
+  const changes = await confirmedKickoffs(upcoming, sportsDbRound);
+  await setKickoffs(changes, now);
+  console.log(`kickoffs: ${changes.length} of ${upcoming.length} upcoming matches changed`);
 }

@@ -15,11 +15,11 @@ test("a played match without details says so", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Cómo fue" })).toHaveCount(0);
 });
 
-// A Clausura round-of-16 match still on the provider's shared placeholder kickoff.
-test("a scheduled match without a confirmed kickoff says so", async ({ page }) => {
+// A Clausura round-of-16 match: Highlightly still has its placeholder, TheSportsDB the real kickoff.
+test("a scheduled match shows the kickoff TheSportsDB has", async ({ page }) => {
   await page.goto("/partidos/1403785705");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("A confirmar");
-  await expect(page.getByText("El día y el horario todavía no están confirmados.")).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("20:00");
+  await expect(page.getByText("el viernes 20 de noviembre a las 20:00")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Estadísticas" })).toHaveCount(0);
 });
 

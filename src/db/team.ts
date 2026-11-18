@@ -13,6 +13,7 @@ export const teamMatchColumns = {
   tournament: matches.tournament,
   matchday: matches.matchday,
   kickoff: matches.kickoff,
+  providerKickoff: matches.providerKickoff,
   status: matches.status,
   homeTeamId: matches.homeTeamId,
   awayTeamId: matches.awayTeamId,

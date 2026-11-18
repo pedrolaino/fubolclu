@@ -17,19 +17,26 @@ type Slot = {
   status: MatchStatus | null;
   roundLabel: string;
   kickoff: Date;
+  // Highlightly's kickoff, when TheSportsDB may have replaced it.
+  providerKickoff?: Date;
   // Optional where every match given is of one competition.
   competition?: Competition;
 };
 
-// The provider gives every match of a round one shared kickoff until the fixture is scheduled,
-// so four or more unplayed matches of a round at the same instant don't have a real date yet.
+// Highlightly gives every match of a round one shared kickoff until the fixture is scheduled,
+// so four or more unplayed matches of a round at the same instant don't have a real date yet,
+// unless TheSportsDB already gave that match its own.
 export function unconfirmedKickoff(matches: Slot[]) {
-  const key = (m: Slot) => `${m.competition ?? ""}|${m.roundLabel}|${m.kickoff.getTime()}`;
+  const raw = (m: Slot) => m.providerKickoff ?? m.kickoff;
+  const key = (m: Slot) => `${m.competition ?? ""}|${m.roundLabel}|${raw(m).getTime()}`;
   const counts = new Map<string, number>();
   for (const m of matches) {
     if (m.status === "scheduled") counts.set(key(m), (counts.get(key(m)) ?? 0) + 1);
   }
-  return (m: Slot) => m.status === "scheduled" && (counts.get(key(m)) ?? 0) >= 4;
+  return (m: Slot) =>
+    m.status === "scheduled" &&
+    raw(m).getTime() === m.kickoff.getTime() &&
+    (counts.get(key(m)) ?? 0) >= 4;
 }
 
 // "unstarted" until a match of the table has been played; "over" once none is left.

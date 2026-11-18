@@ -16,7 +16,9 @@ Next.js 16 (App Router), TypeScript, Tailwind, Drizzle on Postgres, Motion. Vite
 
 Data comes from [Highlightly](https://highlightly.net). Its free plan allows 100 requests a day, so the site never calls it. A script (`pnpm sync`), run every 30 minutes from GitHub Actions, decides which calls are worth making and writes the results to Postgres. Pages only read the database.
 
-The sync counts its requests per day and stops at 90. Match lists and standings are refreshed once a day, a match in play costs one page of the list, and whatever is left of the budget goes to match details (goals, cards, stats), newest first. A season is about 1,200 matches, so a new database takes around two weeks to fill in the details.
+Highlightly is slow with kickoff times: for a knockout round it gives every match the same placeholder until a few days before. So the same script also asks [TheSportsDB](https://www.thesportsdb.com) for the rounds coming up and takes their kickoff times from there. The two providers' team ids are matched in `src/config/sports-db.ts`.
+
+For Highlightly, the sync counts its requests per day and stops at 90. Match lists and standings are refreshed once a day, a match in play costs one page of the list, and whatever is left of the budget goes to match details (goals, cards, stats), newest first. A season is about 1,200 matches, so a new database takes around two weeks to fill in the details.
 
 Tables are computed from match results in `src/lib/standings`. The tests compare them with the provider's own zone tables for 2026.
 

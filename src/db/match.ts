@@ -41,6 +41,7 @@ export async function loadMatch(id: number) {
         roundLabel: matches.roundLabel,
         status: matches.status,
         kickoff: matches.kickoff,
+        providerKickoff: matches.providerKickoff,
       })
       .from(matches)
       .where(

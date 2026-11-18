@@ -27,7 +27,7 @@ export async function Footer() {
               Datos de Highlightly
             </a>
             <a href="https://www.thesportsdb.com" className="underline hover:text-ink">
-              Escudos de TheSportsDB
+              Escudos y horarios de TheSportsDB
             </a>
             <a href="https://github.com/pedrolaino/fubolclu" className="underline hover:text-ink">
               Código

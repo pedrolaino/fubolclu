@@ -36,3 +36,22 @@ test("counts only unplayed matches of the same competition and round", () => {
   const round = [slot(), slot(), slot(), slot(), slot({ status: "finished" })];
   expect(round.map(unconfirmedKickoff(round))).toEqual([true, true, true, true, false]);
 });
+
+test("keeps the rest of a round unconfirmed after TheSportsDB dates some of it", () => {
+  const friday = new Date("2026-11-20T23:00:00Z");
+  const round = [
+    ...[0, 1, 2, 3, 4, 5].map(() => slot({ kickoff: friday, providerKickoff: sunday })),
+    slot({ providerKickoff: sunday }),
+    slot({ providerKickoff: sunday }),
+  ];
+  expect(round.map(unconfirmedKickoff(round))).toEqual([
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    true,
+    true,
+  ]);
+});

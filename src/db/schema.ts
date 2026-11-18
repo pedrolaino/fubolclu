@@ -48,7 +48,10 @@ export const matches = pgTable(
     tournament: text("tournament").$type<Tournament>(),
     phase: text("phase").$type<Phase>().notNull(),
     matchday: integer("matchday"),
+    // TheSportsDB's when it has the match before Highlightly does.
     kickoff: tz("kickoff").notNull(),
+    // Highlightly's, kept apart because it can be a placeholder for the whole round.
+    providerKickoff: tz("provider_kickoff").notNull(),
     status: text("status").$type<MatchStatus>().notNull(),
     homeTeamId: integer("home_team_id")
       .notNull()

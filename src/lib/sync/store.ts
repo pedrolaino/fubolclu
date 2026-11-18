@@ -1,4 +1,4 @@
-import { and, eq, sql } from "drizzle-orm";
+import { and, between, eq, sql } from "drizzle-orm";
 import { teamInfo } from "@/config/teams";
 import { db } from "@/db";
 import {
@@ -48,7 +48,7 @@ const matchColumns = [
   "tournament",
   "phase",
   "matchday",
-  "kickoff",
+  "providerKickoff",
   "homeTeamId",
   "awayTeamId",
   "homeGoals",
@@ -58,12 +58,22 @@ const matchColumns = [
   "updatedAt",
 ] as const;
 
-const excluded = (keys: readonly (keyof typeof matches.$inferInsert & keyof typeof matches)[]) =>
-  Object.fromEntries(keys.map((k) => [k, sql.raw(`excluded.${matches[k].name}`)]));
+const excluded = (keys: readonly (keyof typeof matches.$inferInsert & keyof typeof matches)[]) => ({
+  ...Object.fromEntries(keys.map((k) => [k, sql.raw(`excluded.${matches[k].name}`)])),
+  // A kickoff TheSportsDB corrected stays until the match starts.
+  kickoff: sql`case when ${matches.kickoff} <> ${matches.providerKickoff}
+    and ${matches.status} = 'scheduled' and excluded.status = 'scheduled'
+    then ${matches.kickoff} else excluded.kickoff end`,
+});
 
 export async function upsertMatchPage(page: MatchPage, now: Date) {
   await upsertTeams(page.teams);
-  const rows = page.matches.map((m) => ({ ...m, status: m.status ?? "scheduled", updatedAt: now }));
+  const rows = page.matches.map((m) => ({
+    ...m,
+    providerKickoff: m.kickoff,
+    status: m.status ?? "scheduled",
+    updatedAt: now,
+  }));
   const known = rows.filter((_, i) => page.matches[i].status !== null);
   const unknown = rows.filter((_, i) => page.matches[i].status === null);
   if (known.length) {
@@ -193,4 +203,39 @@ export async function closeStaleRuns() {
     .update(syncRuns)
     .set({ status: "error", error: "Interrupted: the job ended before finishing the run" })
     .where(eq(syncRuns.status, "running"));
+}
+
+// Not started, in the next weeks or just past a placeholder kickoff.
+export async function upcomingMatches(season: number, now: Date) {
+  const day = 24 * 60 * 60 * 1000;
+  return db
+    .select({
+      id: matches.id,
+      competition: matches.competition,
+      phase: matches.phase,
+      matchday: matches.matchday,
+      roundLabel: matches.roundLabel,
+      homeTeamId: matches.homeTeamId,
+      awayTeamId: matches.awayTeamId,
+      kickoff: matches.kickoff,
+      providerKickoff: matches.providerKickoff,
+    })
+    .from(matches)
+    .where(
+      and(
+        eq(matches.season, season),
+        eq(matches.status, "scheduled"),
+        between(
+          matches.providerKickoff,
+          new Date(now.getTime() - 2 * day),
+          new Date(now.getTime() + 45 * day),
+        ),
+      ),
+    );
+}
+
+export async function setKickoffs(changes: { id: number; kickoff: Date }[], now: Date) {
+  for (const { id, kickoff } of changes) {
+    await db.update(matches).set({ kickoff, updatedAt: now }).where(eq(matches.id, id));
+  }
 }

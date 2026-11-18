@@ -1,0 +1,100 @@
+{
+  "events": [
+    {
+      "idEvent": "2627819",
+      "strEvent": "Vélez Sarsfield vs Belgrano",
+      "intRound": "160",
+      "strTimestamp": "2026-11-20T23:00:00",
+      "dateEvent": "2026-11-20",
+      "strTime": "23:00:00",
+      "idHomeTeam": "135179",
+      "idAwayTeam": "135155",
+      "strStatus": "NS",
+      "strPostponed": "no"
+    },
+    {
+      "idEvent": "2627820",
+      "strEvent": "Defensa y Justicia vs Barracas Central",
+      "intRound": "160",
+      "strTimestamp": "2026-11-21T18:00:00",
+      "dateEvent": "2026-11-21",
+      "strTime": "18:00:00",
+      "idHomeTeam": "135159",
+      "idAwayTeam": "137771",
+      "strStatus": "NS",
+      "strPostponed": "no"
+    },
+    {
+      "idEvent": "2627822",
+      "strEvent": "Argentinos Juniors vs Independiente",
+      "intRound": "160",
+      "strTimestamp": "2026-11-21T20:00:00",
+      "dateEvent": "2026-11-21",
+      "strTime": "20:00:00",
+      "idHomeTeam": "135151",
+      "idAwayTeam": "135164",
+      "strStatus": "NS",
+      "strPostponed": "no"
+    },
+    {
+      "idEvent": "2627817",
+      "strEvent": "River Plate vs Lanús",
+      "intRound": "160",
+      "strTimestamp": "2026-11-22T22:00:00",
+      "dateEvent": "2026-11-22",
+      "strTime": "22:00:00",
+      "idHomeTeam": "135171",
+      "idAwayTeam": "135165",
+      "strStatus": "NS",
+      "strPostponed": "no"
+    },
+    {
+      "idEvent": "2627818",
+      "strEvent": "Rosario Central vs Gimnasia y Esgrima de Mendoza",
+      "intRound": "160",
+      "strTimestamp": "2026-11-22T19:00:00",
+      "dateEvent": "2026-11-22",
+      "strTime": "19:00:00",
+      "idHomeTeam": "135172",
+      "idAwayTeam": "137778",
+      "strStatus": "NS",
+      "strPostponed": "no"
+    },
+    {
+      "idEvent": "2627816",
+      "strEvent": "Gimnasia y Esgrima de La Plata vs Newell's Old Boys",
+      "intRound": "160",
+      "strTimestamp": "2026-11-23T20:00:00",
+      "dateEvent": "2026-11-23",
+      "strTime": "20:00:00",
+      "idHomeTeam": "135161",
+      "idAwayTeam": "135166",
+      "strStatus": "NS",
+      "strPostponed": "no"
+    },
+    {
+      "idEvent": "2627823",
+      "strEvent": "Instituto vs Huracán",
+      "intRound": "160",
+      "strTimestamp": "2026-11-23T01:00:00",
+      "dateEvent": "2026-11-23",
+      "strTime": "01:00:00",
+      "idHomeTeam": "137786",
+      "idAwayTeam": "135163",
+      "strStatus": "NS",
+      "strPostponed": "no"
+    },
+    {
+      "idEvent": "2627821",
+      "strEvent": "Boca Juniors vs Independiente Rivadavia",
+      "intRound": "160",
+      "strTimestamp": "2026-11-26T00:00:00",
+      "dateEvent": "2026-11-26",
+      "strTime": "00:00:00",
+      "idHomeTeam": "135156",
+      "idAwayTeam": "137777",
+      "strStatus": "NS",
+      "strPostponed": "no"
+    }
+  ]
+}
