@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     url: "https://fubolclu.vercel.app/acerca",
     type: "website",
     locale: "es_AR",
-    images: [{ url: "https://fubolclu.vercel.app/landing/inicio.webp", width: 1440, height: 1666 }],
+    images: [{ url: "https://fubolclu.vercel.app/landing/inicio.webp", width: 1440, height: 1570 }],
   },
   twitter: { card: "summary_large_image" },
 };
@@ -70,7 +70,7 @@ export default function AboutPage() {
                 src="/landing/inicio.webp"
                 alt="Captura de FubolClú con resultados, fixture y tablas"
                 width={1440}
-                height={1666}
+                height={1570}
                 sizes="(min-width: 1000px) 680px, (min-width: 768px) 55vw, 100vw"
                 priority
               />
