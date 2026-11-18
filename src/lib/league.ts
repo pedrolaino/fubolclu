@@ -1,6 +1,6 @@
 import type { CompetitionSeason } from "@/config/seasons/types";
 import type { MatchStatus } from "@/db/schema";
-import { dayLabel, rangeLabel } from "@/lib/dates";
+import { dayLabel, roundDays } from "@/lib/dates";
 import { paint } from "@/lib/paint";
 import { contestName, isUpcoming, ofContest, tableState, unconfirmedKickoff } from "@/lib/results";
 import {
@@ -331,9 +331,10 @@ export function buildLeague(data: LeagueData, config: CompetitionSeason, now: Da
     const dated = matches.filter((m) => !tbd(m));
     return {
       title: roundName(of),
-      day: dated.length
-        ? rangeLabel(dated[0].kickoff, dated.at(-1)!.kickoff)
-        : "Días y horarios a confirmar",
+      day: roundDays(
+        dated.map((m) => m.kickoff),
+        matches.length - dated.length,
+      ),
       matches: matches.map(view),
     };
   };

@@ -227,6 +227,15 @@ describe("buildLeague", () => {
     expect(next?.matches.every((m) => m.unconfirmed)).toBe(true);
   });
 
+  it("says the rest of a round is still unconfirmed once one match gets its date", () => {
+    const velez = {
+      ...octavos([[384585, 407562]])[0],
+      kickoff: new Date(Date.UTC(2026, 7, 20, 23)),
+    };
+    const { next } = buildLeague(data([...played, ...four, velez]), config, now);
+    expect(next?.day).toMatch(/20 de agosto\. El resto, a confirmar$/);
+  });
+
   it("keeps the date when only three matches share the kickoff", () => {
     const { tabs, next } = buildLeague(data([...played, ...four.slice(0, 3)]), config, now);
     expect(tabs[0].summary).toMatch(

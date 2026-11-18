@@ -29,3 +29,10 @@ export function rangeLabel(from: Date, to: Date) {
     dayAndMonth.format(from).split(" de ")[1] === dayAndMonth.format(to).split(" de ")[1];
   return `del ${(sameMonth ? dayOfMonth : dayAndMonth).format(from)} al ${dayAndMonth.format(to)}`;
 }
+
+// The days a round is played on, from the matches that already have a confirmed kickoff.
+export function roundDays(dated: Date[], undated: number) {
+  if (!dated.length) return "Días y horarios a confirmar";
+  const range = rangeLabel(dated[0], dated.at(-1)!);
+  return undated ? `${range}. El resto, a confirmar` : range;
+}

@@ -1,4 +1,4 @@
-import { dayLabel, rangeLabel } from "@/lib/dates";
+import { dayLabel, roundDays } from "@/lib/dates";
 import {
   nextStagePhrase,
   roundName,
@@ -81,9 +81,10 @@ export function buildCup(data: CupData, now: Date) {
     rounds.push({
       key: label.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
       title: roundName(info(label)),
-      day: dated.length
-        ? rangeLabel(dated[0].kickoff, dated.at(-1)!.kickoff)
-        : "Días y horarios a confirmar",
+      day: roundDays(
+        dated.map((m) => m.kickoff),
+        ties.length - dated.length,
+      ),
       ties: ties.map(view),
     });
   }
