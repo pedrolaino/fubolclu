@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { Logo } from "@/components/logo";
 import { ProductGuide } from "./product-guide";
 import "./landing.css";
 
@@ -36,8 +37,8 @@ export default function AboutPage() {
           <a className="fc-skip" href="#contenido">
             Saltar al contenido
           </a>
-          <Link href="/" className="display fc-wordmark">
-            FubolClú
+          <Link href="/" className="fc-wordmark">
+            <Logo />
           </Link>
           <a href="#como-usarlo" className="fc-navGuide">
             Cómo usarlo

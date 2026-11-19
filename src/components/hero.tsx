@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import type { TeamView } from "@/lib/league";
 import { Crest } from "./crest";
+import { Logo } from "./logo";
 
 // [href, name, short name for screens under 860px]
 const links = [
@@ -56,11 +57,8 @@ export function Hero({
       />
       <div className="relative mx-auto max-w-[1200px] px-4">
         <nav className="flex flex-wrap items-center text-[15px] font-semibold whitespace-nowrap wide:h-[60px] wide:flex-nowrap wide:gap-7">
-          <Link
-            href="/"
-            className="display mr-3 basis-full pt-4 pb-1 text-[30px] wide:basis-auto wide:p-0"
-          >
-            FubolClú
+          <Link href="/" className="mr-3 basis-full pt-4 pb-1 wide:basis-auto wide:p-0">
+            <Logo className="h-[30px] w-auto" />
           </Link>
           <div className="flex h-11 w-full justify-between wide:contents">
             {links.map(([href, label, short]) => (

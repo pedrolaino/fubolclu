@@ -1,14 +1,15 @@
 import Link from "next/link";
 import { loadSyncedAt } from "@/db/queries";
 import { dayLabel, timeLabel } from "@/lib/dates";
+import { Logo } from "./logo";
 
 export async function Footer() {
   const syncedAt = await loadSyncedAt();
   return (
     <footer className="mx-auto max-w-[1200px] px-4 pb-10">
       <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-3 border-t-2 border-ink pt-5 text-sm">
-        <Link href="/" className="display text-[32px]">
-          FubolClú
+        <Link href="/">
+          <Logo className="h-[32px] w-auto" />
         </Link>
         <Link
           href="/acerca"

@@ -1,4 +1,9 @@
-# FubolClu
+<h1>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/logo-white.svg">
+    <img src="docs/logo.svg" alt="FubolClu" height="56">
+  </picture>
+</h1>
 
 Standings, fixtures and scorers for Argentine football: Liga Profesional, Primera Nacional and Copa Argentina.
 

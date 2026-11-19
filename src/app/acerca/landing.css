@@ -28,8 +28,11 @@
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  font-size: 36px;
   margin-right: auto;
+}
+.fc-wordmark svg {
+  height: 36px;
+  width: auto;
 }
 .fc-navGuide,
 .fc-navAction {
@@ -241,8 +244,8 @@
     min-height: 72px;
     gap: 24px;
   }
-  .fc-wordmark {
-    font-size: 30px;
+  .fc-wordmark svg {
+    height: 30px;
   }
   .fc-navGuide {
     display: none;
